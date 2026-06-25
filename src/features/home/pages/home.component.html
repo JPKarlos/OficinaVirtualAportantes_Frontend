@@ -1,0 +1,247 @@
+<app-layout pageTitle="Inicio">
+  <div class="min-h-screen bg-gray-50">
+    <!-- Header Section -->
+    <div class="bg-white shadow">
+      <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+        <div class="flex items-center justify-between">
+          <div>
+            <h1 class="text-3xl font-bold text-gray-900">Bienvenido</h1>
+            <p class="mt-2 text-gray-600">Oficina Virtual Aportantes - Mallamas EPS</p>
+          </div>
+          <div class="flex items-center space-x-4">
+            <img
+              src="/assets/images/logomallamas400pxalto.png"
+              alt="Logo Mallamas EPS"
+              class="h-16 w-auto"
+              (error)="onImageError($event)"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+      
+      <!-- Validation Message Component -->
+      <app-data-validation-message 
+        [config]="validationResult()"
+        [isLoading]="isValidating()"
+        (buttonClicked)="onValidationButtonClicked($event)">
+      </app-data-validation-message>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        
+        <!-- Welcome Card -->
+        <div class="bg-white overflow-hidden shadow rounded-lg">
+          <div class="p-6">
+            <div class="flex items-center">
+              <div class="flex-shrink-0">
+                <div class="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
+                  <span class="text-white text-sm font-bold">👋</span>
+                </div>
+              </div>
+              <div class="ml-4">
+                <h3 class="text-lg font-medium text-gray-900">Bienvenido</h3>
+                <p class="text-sm text-gray-500">Sistema de gestión de aportantes</p>
+              </div>
+            </div>
+            <div class="mt-4">
+              <p class="text-sm text-gray-600">
+                Accede a todos los servicios disponibles para los aportantes de Mallamas EPS.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Services Card -->
+        <div class="bg-white overflow-hidden shadow rounded-lg">
+          <div class="p-6">
+            <div class="flex items-center">
+              <div class="flex-shrink-0">
+                <div class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
+                  <span class="text-white text-sm font-bold">⚙️</span>
+                </div>
+              </div>
+              <div class="ml-4">
+                <h3 class="text-lg font-medium text-gray-900">Servicios</h3>
+                <p class="text-sm text-gray-500">Acceso a servicios en línea</p>
+              </div>
+            </div>
+            <div class="mt-4">
+              <p class="text-sm text-gray-600">
+                Consulta tu información personal, documentos y trámites disponibles.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Support Card -->
+        <div class="bg-white overflow-hidden shadow rounded-lg">
+          <div class="p-6">
+            <div class="flex items-center">
+              <div class="flex-shrink-0">
+                <div class="w-8 h-8 bg-purple-500 rounded-full flex items-center justify-center">
+                  <span class="text-white text-sm font-bold">📞</span>
+                </div>
+              </div>
+              <div class="ml-4">
+                <h3 class="text-lg font-medium text-gray-900">Soporte</h3>
+                <p class="text-sm text-gray-500">Ayuda y contacto</p>
+              </div>
+            </div>
+            <div class="mt-4">
+              <p class="text-sm text-gray-600">
+                Encuentra ayuda, contacta con soporte técnico o consulta información adicional.
+              </p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      @if (showQuickActions()) {
+      <!-- Quick Actions Section: solo aportante con última actualización menor a 6 meses -->
+      <div class="mt-8">
+        <h2 class="text-2xl font-bold text-gray-900 mb-6">Acciones Rápidas</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          
+          <button
+            type="button"
+            (click)="openAfiliadosModal()"
+            class="bg-white p-6 rounded-lg shadow hover:shadow-md transition-shadow duration-200 text-left"
+          >
+            <div class="flex items-center mb-3">
+              <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+                <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                </svg>
+              </div>
+            </div>
+            <h3 class="font-semibold text-gray-900">Afiliados asociados al aportante</h3>
+            <p class="text-sm text-gray-500 mt-1">Consultar afiliados vinculados al aportante</p>
+          </button>
+
+          <button
+            type="button"
+            (click)="openMoraModal()"
+            class="bg-white p-6 rounded-lg shadow hover:shadow-md transition-shadow duration-200 text-left"
+          >
+            <div class="flex items-center mb-3">
+              <div class="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center">
+                <svg class="w-6 h-6 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                </svg>
+              </div>
+            </div>
+            <h3 class="font-semibold text-gray-900">Mora x aportante</h3>
+            <p class="text-sm text-gray-500 mt-1">Consultar mora asociada al aportante</p>
+          </button>
+
+          <button
+            type="button"
+            (click)="openIncapacidadesModal()"
+            class="bg-white p-6 rounded-lg shadow hover:shadow-md transition-shadow duration-200 text-left"
+          >
+            <div class="flex items-center mb-3">
+              <div class="w-10 h-10 bg-yellow-100 rounded-lg flex items-center justify-center">
+                <svg class="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                </svg>
+              </div>
+            </div>
+            <h3 class="font-semibold text-gray-900">Prestaciones Económicas x Aportante - Incapacidades</h3>
+            <p class="text-sm text-gray-500 mt-1">Consultar incapacidades asociadas al aportante</p>
+          </button>
+
+          <button
+            type="button"
+            (click)="openLicenciasModal()"
+            class="bg-white p-6 rounded-lg shadow hover:shadow-md transition-shadow duration-200 text-left"
+          >
+            <div class="flex items-center mb-3">
+              <div class="w-10 h-10 bg-indigo-100 rounded-lg flex items-center justify-center">
+                <svg class="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                </svg>
+              </div>
+            </div>
+            <h3 class="font-semibold text-gray-900">Prestaciones Económicas x Aportante - Licencias</h3>
+            <p class="text-sm text-gray-500 mt-1">Consultar licencias asociadas al aportante</p>
+          </button>
+
+          <button
+            type="button"
+            (click)="openSolicitudesModal()"
+            class="bg-white p-6 rounded-lg shadow hover:shadow-md transition-shadow duration-200 text-left"
+          >
+            <div class="flex items-center mb-3">
+              <div class="w-10 h-10 bg-teal-100 rounded-lg flex items-center justify-center">
+                <svg class="w-6 h-6 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                </svg>
+              </div>
+            </div>
+            <h3 class="font-semibold text-gray-900">Solicitudes</h3>
+            <p class="text-sm text-gray-500 mt-1">Consultar solicitudes en trámite y radicar novedades</p>
+          </button>
+
+        </div>
+      </div>
+      }
+
+      <!-- Information Section -->
+      <div class="mt-8 bg-white rounded-lg shadow p-6">
+        <h2 class="text-xl font-bold text-gray-900 mb-4">Información Importante</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <h3 class="font-semibold text-gray-900 mb-2">Horarios de Atención</h3>
+            <p class="text-sm text-gray-600">
+              Lunes a Viernes: 8:00 AM - 5:00 PM<br>
+              Sábados: 8:00 AM - 12:00 PM
+            </p>
+          </div>
+          <div>
+            <h3 class="font-semibold text-gray-900 mb-2">Contacto</h3>
+            <p class="text-sm text-gray-600">
+              Teléfono: (2) 123-4567<br>
+              Email: info@mallamaseps.com
+            </p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <app-afiliados-asociados-modal
+    [open]="showAfiliadosModal()"
+    [aportanteId]="aportanteId()"
+    (closed)="closeAfiliadosModal()"
+  />
+
+  <app-mora-aportante-modal
+    [open]="showMoraModal()"
+    [aportanteId]="aportanteId()"
+    (closed)="closeMoraModal()"
+  />
+
+  <app-incapacidades-aportante-modal
+    [open]="showIncapacidadesModal()"
+    [aportanteId]="aportanteId()"
+    (closed)="closeIncapacidadesModal()"
+  />
+
+  <app-licencias-aportante-modal
+    [open]="showLicenciasModal()"
+    [aportanteId]="aportanteId()"
+    (closed)="closeLicenciasModal()"
+  />
+
+  <app-solicitudes-modal
+    [open]="showSolicitudesModal()"
+    [aportanteId]="aportanteId()"
+    (closed)="closeSolicitudesModal()"
+  />
+</app-layout>
+
+

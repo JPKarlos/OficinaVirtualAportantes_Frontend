@@ -1,0 +1,484 @@
+<app-layout pageTitle="Actualizar Datos">
+  <div class="max-w-5xl mx-auto">
+    <div class="bg-white rounded-lg shadow p-6">
+      <div class="mb-6">
+        <h2 class="text-2xl font-bold text-gray-900">Actualizar Datos del Aportante</h2>
+        <p class="mt-2 text-sm text-gray-600">
+          Revise y actualice la información del aportante. Los datos se cargan desde la base de datos según su usuario autenticado.
+        </p>
+        @if (aportanteId()) {
+          <p class="mt-1 text-sm text-gray-500">Aportante ID: {{ aportanteId() }}</p>
+        }
+      </div>
+
+      @if (isLoadingData()) {
+        <div class="mb-6 flex items-center gap-3 rounded-md border border-gray-200 bg-gray-50 p-4 text-sm text-gray-600">
+          <svg class="h-5 w-5 animate-spin text-yellow-600" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          </svg>
+          Cargando datos del aportante...
+        </div>
+      }
+
+      @if (successMessage()) {
+        <div class="mb-6 bg-green-50 border border-green-200 rounded-md p-4">
+          <p class="text-sm text-green-800">{{ successMessage() }}</p>
+        </div>
+      }
+
+      @if (errorMessage()) {
+        <div class="mb-6 bg-red-50 border border-red-200 rounded-md p-4">
+          <p class="text-sm text-red-800">{{ errorMessage() }}</p>
+        </div>
+      }
+
+      @if (!isLoadingData()) {
+      <form [formGroup]="updateForm" (ngSubmit)="onSubmit()" novalidate class="space-y-8">
+        <section>
+          <h3 class="text-lg font-semibold text-gray-900 mb-4">Identificación del aportante</h3>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <app-tipo-iden-cont-select
+                formControlName="apidentificacionId"
+                label="Tipo de identificación aportante"
+                inputId="apidentificacionId"
+                placeholder="Seleccione tipo de identificación del aportante..."
+                [required]="true"
+                [invalid]="!!(apidentificacionId?.invalid && apidentificacionId?.touched)"
+                [touched]="!!apidentificacionId?.touched"
+              ></app-tipo-iden-cont-select>
+              @if (apidentificacionId?.invalid && apidentificacionId?.touched) {
+                <p class="mt-1 text-sm text-red-600">El tipo de identificación del aportante es requerido</p>
+              }
+            </div>
+
+            <div>
+              <label for="idenAportante" class="block text-sm font-medium text-gray-700">
+                Identificación del aportante *
+              </label>
+              <input
+                id="idenAportante"
+                type="text"
+                formControlName="idenAportante"
+                placeholder="Ej: 900123456"
+                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-yellow-500 focus:border-yellow-500 sm:text-sm"
+              />
+              @if (idenAportante?.invalid && idenAportante?.touched) {
+                <p class="mt-1 text-sm text-red-600">La identificación es requerida</p>
+              }
+            </div>
+
+            <div>
+              <label for="dvAportante" class="block text-sm font-medium text-gray-700">
+                Dígito de verificación
+              </label>
+              <input
+                id="dvAportante"
+                type="text"
+                formControlName="dvAportante"
+                placeholder="Ej: 1"
+                maxlength="1"
+                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-yellow-500 focus:border-yellow-500 sm:text-sm"
+              />
+            </div>
+
+            <div class="md:col-span-2">
+              <label for="nombreRazonSocial" class="block text-sm font-medium text-gray-700">
+                Nombre o razón social *
+              </label>
+              <input
+                id="nombreRazonSocial"
+                type="text"
+                formControlName="nombreRazonSocial"
+                placeholder="Nombre completo o razón social"
+                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-yellow-500 focus:border-yellow-500 sm:text-sm"
+              />
+              @if (nombreRazonSocial?.invalid && nombreRazonSocial?.touched) {
+                <p class="mt-1 text-sm text-red-600">El nombre o razón social es requerido</p>
+              }
+            </div>
+          </div>
+        </section>
+
+        <section class="border-t border-gray-200 pt-6">
+          <h3 class="text-lg font-semibold text-gray-900 mb-4">Sucursal / dependencia</h3>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label for="codSucDep" class="block text-sm font-medium text-gray-700">
+                Código sucursal / dependencia
+              </label>
+              <input
+                id="codSucDep"
+                type="text"
+                formControlName="codSucDep"
+                placeholder="Código"
+                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-yellow-500 focus:border-yellow-500 sm:text-sm"
+              />
+            </div>
+
+            <div>
+              <label for="nomSucDep" class="block text-sm font-medium text-gray-700">
+                Nombre sucursal / dependencia
+              </label>
+              <input
+                id="nomSucDep"
+                type="text"
+                formControlName="nomSucDep"
+                placeholder="Nombre"
+                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-yellow-500 focus:border-yellow-500 sm:text-sm"
+              />
+            </div>
+          </div>
+        </section>
+
+        <section class="border-t border-gray-200 pt-6">
+          <h3 class="text-lg font-semibold text-gray-900 mb-4">Clasificación</h3>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <app-clase-aportante-select
+                formControlName="claseAportanteIde"
+                label="Clase aportante"
+                inputId="claseAportanteIde"
+                [required]="true"
+                [invalid]="!!(claseAportanteIde?.invalid && claseAportanteIde?.touched)"
+                [touched]="!!claseAportanteIde?.touched"
+              ></app-clase-aportante-select>
+              @if (claseAportanteIde?.invalid && claseAportanteIde?.touched) {
+                <p class="mt-1 text-sm text-red-600">La clase aportante es requerida</p>
+              }
+            </div>
+
+            <div>
+              <app-tipo-aportante-cont-select
+                formControlName="tipoAportanteContIde"
+                label="Tipo de aportante"
+                inputId="tipoAportanteContIde"
+              ></app-tipo-aportante-cont-select>
+            </div>
+
+            <div>
+              <app-naturaleza-aportante-select
+                formControlName="naturalezaAportanteIde"
+                label="Naturaleza aportante"
+                inputId="naturalezaAportanteIde"
+                [required]="true"
+                [invalid]="!!(naturalezaAportanteIde?.invalid && naturalezaAportanteIde?.touched)"
+                [touched]="!!naturalezaAportanteIde?.touched"
+              ></app-naturaleza-aportante-select>
+              @if (naturalezaAportanteIde?.invalid && naturalezaAportanteIde?.touched) {
+                <p class="mt-1 text-sm text-red-600">La naturaleza aportante es requerida</p>
+              }
+            </div>
+
+            <div>
+              <app-tipo-persona-select
+                formControlName="tipoPersonaIde"
+                label="Tipo de persona"
+                inputId="tipoPersonaIde"
+                [required]="true"
+                [invalid]="!!(tipoPersonaIde?.invalid && tipoPersonaIde?.touched)"
+                [touched]="!!tipoPersonaIde?.touched"
+              ></app-tipo-persona-select>
+              @if (tipoPersonaIde?.invalid && tipoPersonaIde?.touched) {
+                <p class="mt-1 text-sm text-red-600">Seleccione el tipo de persona</p>
+              }
+            </div>
+
+            <div>
+              <app-forma-presentacion-select
+                formControlName="formaPresentacionIde"
+                label="Forma de presentación"
+                inputId="formaPresentacionIde"
+              ></app-forma-presentacion-select>
+            </div>
+
+            <div>
+              <app-tipo-accion-select
+                formControlName="tipoAccionIde"
+                label="Tipo de acción"
+                inputId="tipoAccionIde"
+              ></app-tipo-accion-select>
+            </div>
+
+            <div>
+              <app-municipio-select
+                formControlName="municipioIde"
+                label="Municipio"
+                inputId="municipioIde"
+                [required]="true"
+                [invalid]="!!(municipioIde?.invalid && municipioIde?.touched)"
+                [touched]="!!municipioIde?.touched"
+              ></app-municipio-select>
+              @if (municipioIde?.invalid && municipioIde?.touched) {
+                <p class="mt-1 text-sm text-red-600">El municipio es requerido</p>
+              }
+            </div>
+
+            <div>
+              <app-ciiu-clase-select
+                formControlName="ciiuClaseId"
+                label="Actividad económica"
+                inputId="ciiuClaseId"
+                [required]="true"
+                [invalid]="!!(ciiuClaseId?.invalid && ciiuClaseId?.touched)"
+                [touched]="!!ciiuClaseId?.touched"
+              ></app-ciiu-clase-select>
+              @if (ciiuClaseId?.invalid && ciiuClaseId?.touched) {
+                <p class="mt-1 text-sm text-red-600">La actividad económica es requerida</p>
+              }
+            </div>
+          </div>
+        </section>
+
+        <section class="border-t border-gray-200 pt-6">
+          <h3 class="text-lg font-semibold text-gray-900 mb-4">Contacto y dirección</h3>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="md:col-span-2">
+              <label for="direccionCorres" class="block text-sm font-medium text-gray-700">
+                Dirección de correspondencia
+              </label>
+              <input
+                id="direccionCorres"
+                type="text"
+                formControlName="direccionCorres"
+                placeholder="Dirección principal"
+                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-yellow-500 focus:border-yellow-500 sm:text-sm"
+              />
+            </div>
+
+            <div class="md:col-span-2">
+              <label for="direccionAlterna" class="block text-sm font-medium text-gray-700">
+                Dirección alterna
+              </label>
+              <input
+                id="direccionAlterna"
+                type="text"
+                formControlName="direccionAlterna"
+                placeholder="Dirección alterna"
+                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-yellow-500 focus:border-yellow-500 sm:text-sm"
+              />
+            </div>
+
+            <div>
+              <label for="telefono" class="block text-sm font-medium text-gray-700">Teléfono</label>
+              <input
+                id="telefono"
+                type="text"
+                formControlName="telefono"
+                placeholder="Ej: 6021234567"
+                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-yellow-500 focus:border-yellow-500 sm:text-sm"
+              />
+            </div>
+
+            <div>
+              <label for="telefono2" class="block text-sm font-medium text-gray-700">Teléfono 2</label>
+              <input
+                id="telefono2"
+                type="text"
+                formControlName="telefono2"
+                placeholder="Teléfono adicional"
+                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-yellow-500 focus:border-yellow-500 sm:text-sm"
+              />
+            </div>
+
+            <div>
+              <label for="celular" class="block text-sm font-medium text-gray-700">Celular</label>
+              <input
+                id="celular"
+                type="text"
+                formControlName="celular"
+                placeholder="Ej: 3001234567"
+                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-yellow-500 focus:border-yellow-500 sm:text-sm"
+              />
+            </div>
+
+            <div>
+              <label for="celular2" class="block text-sm font-medium text-gray-700">Celular 2</label>
+              <input
+                id="celular2"
+                type="text"
+                formControlName="celular2"
+                placeholder="Celular adicional"
+                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-yellow-500 focus:border-yellow-500 sm:text-sm"
+              />
+            </div>
+
+            <div>
+              <label for="fax" class="block text-sm font-medium text-gray-700">Fax</label>
+              <input
+                id="fax"
+                type="text"
+                formControlName="fax"
+                placeholder="Número de fax"
+                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-yellow-500 focus:border-yellow-500 sm:text-sm"
+              />
+            </div>
+
+            <div>
+              <label for="email" class="block text-sm font-medium text-gray-700">Correo electrónico</label>
+              <input
+                id="email"
+                type="email"
+                formControlName="email"
+                placeholder="correo@ejemplo.com"
+                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-yellow-500 focus:border-yellow-500 sm:text-sm"
+              />
+              @if (email?.invalid && email?.touched) {
+                <p class="mt-1 text-sm text-red-600">Ingrese un correo válido</p>
+              }
+            </div>
+
+            <div>
+              <label for="email2" class="block text-sm font-medium text-gray-700">Correo electrónico 2</label>
+              <input
+                id="email2"
+                type="email"
+                formControlName="email2"
+                placeholder="correo2@ejemplo.com"
+                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-yellow-500 focus:border-yellow-500 sm:text-sm"
+              />
+              @if (email2?.invalid && email2?.touched) {
+                <p class="mt-1 text-sm text-red-600">Ingrese un correo válido</p>
+              }
+            </div>
+          </div>
+        </section>
+
+        <section class="border-t border-gray-200 pt-6">
+          <h3 class="text-lg font-semibold text-gray-900 mb-4">Representante legal</h3>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <app-tipo-iden-cont-select
+                formControlName="rlIdentificacionId"
+                label="Tipo documento identificación"
+                inputId="rlIdentificacionId"
+                placeholder="Seleccione tipo de documento del representante..."
+                [required]="true"
+                [invalid]="!!(rlIdentificacionId?.invalid && rlIdentificacionId?.touched)"
+                [touched]="!!rlIdentificacionId?.touched"
+              ></app-tipo-iden-cont-select>
+              @if (rlIdentificacionId?.invalid && rlIdentificacionId?.touched) {
+                <p class="mt-1 text-sm text-red-600">El tipo de documento del representante legal es requerido</p>
+              }
+            </div>
+
+            <div>
+              <label for="idenRepLegal" class="block text-sm font-medium text-gray-700">
+                Identificación representante legal
+              </label>
+              <input
+                id="idenRepLegal"
+                type="text"
+                formControlName="idenRepLegal"
+                placeholder="Número de identificación"
+                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-yellow-500 focus:border-yellow-500 sm:text-sm"
+              />
+            </div>
+
+            <div>
+              <label for="dvRepLegal" class="block text-sm font-medium text-gray-700">
+                DV representante legal
+              </label>
+              <input
+                id="dvRepLegal"
+                type="text"
+                formControlName="dvRepLegal"
+                placeholder="Ej: 1"
+                maxlength="1"
+                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-yellow-500 focus:border-yellow-500 sm:text-sm"
+              />
+            </div>
+
+            <div>
+              <label for="apellido1RepLeg" class="block text-sm font-medium text-gray-700">Primer apellido</label>
+              <input
+                id="apellido1RepLeg"
+                type="text"
+                formControlName="apellido1RepLeg"
+                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-yellow-500 focus:border-yellow-500 sm:text-sm"
+              />
+            </div>
+
+            <div>
+              <label for="apellido2RepLeg" class="block text-sm font-medium text-gray-700">Segundo apellido</label>
+              <input
+                id="apellido2RepLeg"
+                type="text"
+                formControlName="apellido2RepLeg"
+                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-yellow-500 focus:border-yellow-500 sm:text-sm"
+              />
+            </div>
+
+            <div>
+              <label for="nombre1RepLeg" class="block text-sm font-medium text-gray-700">Primer nombre</label>
+              <input
+                id="nombre1RepLeg"
+                type="text"
+                formControlName="nombre1RepLeg"
+                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-yellow-500 focus:border-yellow-500 sm:text-sm"
+              />
+            </div>
+
+            <div>
+              <label for="nombre2RepLeg" class="block text-sm font-medium text-gray-700">Segundo nombre</label>
+              <input
+                id="nombre2RepLeg"
+                type="text"
+                formControlName="nombre2RepLeg"
+                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-yellow-500 focus:border-yellow-500 sm:text-sm"
+              />
+            </div>
+          </div>
+        </section>
+
+        <section class="border-t border-gray-200 pt-6">
+          <h3 class="text-lg font-semibold text-gray-900 mb-4">Vigencia y control</h3>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label for="fechaInicio" class="block text-sm font-medium text-gray-700">Fecha inicio</label>
+              <input
+                id="fechaInicio"
+                type="date"
+                formControlName="fechaInicio"
+                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-yellow-500 focus:border-yellow-500 sm:text-sm"
+              />
+            </div>
+
+            <div>
+              <label for="fechaFin" class="block text-sm font-medium text-gray-700">Fecha fin</label>
+              <input
+                id="fechaFin"
+                type="date"
+                formControlName="fechaFin"
+                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-yellow-500 focus:border-yellow-500 sm:text-sm"
+              />
+            </div>
+          </div>
+        </section>
+
+        <div class="flex flex-col-reverse sm:flex-row sm:justify-end gap-3 pt-4 border-t border-gray-200">
+          <button
+            type="button"
+            (click)="onCancel()"
+            class="inline-flex justify-center px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
+          >
+            Cancelar
+          </button>
+          <button
+            type="submit"
+            [disabled]="isLoading()"
+            class="inline-flex justify-center px-4 py-2 border border-transparent rounded-md text-sm font-medium text-white bg-yellow-600 hover:bg-yellow-700 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            @if (isLoading()) {
+              Guardando...
+            } @else {
+              Guardar actualización
+            }
+          </button>
+        </div>
+      </form>
+      }
+    </div>
+  </div>
+</app-layout>

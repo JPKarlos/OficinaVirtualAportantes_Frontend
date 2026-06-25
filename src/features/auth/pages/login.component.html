@@ -1,0 +1,147 @@
+<div class="min-h-screen flex">
+  <!-- Lado izquierdo - Iframe de Mallamas -->
+  <div class="flex-1 bg-gray-100">
+    <iframe 
+      title="Mallamas"
+      frameborder="0"
+      src="https://www.mallamaseps.com/"
+      allowfullscreen
+      class="w-full h-screen border-0">
+    </iframe>
+  </div>
+
+  <!-- Lado derecho - Formulario de Login -->
+  <div class="w-[500px] bg-mallamas-green flex flex-col justify-center py-12 px-8">
+    <div class="bg-white py-8 px-6 shadow sm:rounded-lg sm:px-12">
+      <div class="flex justify-center">
+        <img
+          src="/assets/images/logomallamas400pxalto.png"
+          alt="Logo Tutelas"
+          class="h-24 w-auto"
+          (error)="onImageError($event)"
+        />
+      </div>
+      <p class="mt-6 text-center text-2xl font-bold text-gray-600">
+        Oficina Virtual Aportantes
+      </p>
+      <h2 class="mt-4 text-left mb-4 text-xl font-bold text-gray-600">
+        Iniciar Sesión
+      </h2>
+      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="space-y-6">
+        <!-- user Field -->
+        <div>
+          <label for="username" class="block text-sm font-medium text-gray-700">
+            Usuario
+          </label>
+          <div class="mt-1">
+            <input
+              id="username"
+              name="username"
+              type="text"
+              formControlName="username"
+              autocomplete="username"
+              placeholder="admin@tutelas.com"
+              required
+              class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+            />
+          </div>
+          <!-- @if (user?.invalid && user?.touched) {
+            <div class="mt-1 text-sm text-red-600">
+              @if (user?.errors?.['required']) {
+                <p>El usuario es requerido</p>
+              }
+              @if (user?.errors?.['user']) {
+                <p>Ingresa un usuario válido</p>
+              }
+            </div>
+          } -->
+        </div>
+
+        <!-- Password Field -->
+        <div>
+          <label for="password" class="block text-sm font-medium text-gray-700">
+            Contraseña
+          </label>
+          <div class="mt-1">
+            <input
+              id="password"
+              name="password"
+              type="password"
+              formControlName="password"
+              autocomplete="current-password"
+              required
+              class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+              [class.border-red-300]="password?.invalid && password?.touched"
+              [class.focus:ring-red-500]="
+                password?.invalid && password?.touched
+              "
+              [class.focus:border-red-500]="
+                password?.invalid && password?.touched
+              "
+              placeholder="123456"
+            />
+          </div>
+          @if (password?.invalid && password?.touched) {
+          <div class="mt-1 text-sm text-red-600">
+            @if (password?.errors?.['required']) {
+            <p>La contraseña es requerida</p>
+            } @if (password?.errors?.['minlength']) {
+            <p>La contraseña debe tener al menos 6 caracteres</p>
+            }
+          </div>
+          }
+        </div>
+
+        <!-- Error Message -->
+        @if (errorMessage()) {
+        <div class="bg-red-50 border border-red-200 rounded-md p-4">
+          <div class="flex">
+            <div class="flex-shrink-0">
+              <span class="text-red-400 text-lg">⚠️</span>
+            </div>
+            <div class="ml-3">
+              <p class="text-sm text-red-800 mt-1">
+                {{ errorMessage() }}
+              </p>
+            </div>
+          </div>
+        </div>
+        }
+
+        <!-- Submit Button -->
+        <div class="mt-6">
+          <button
+            type="submit"
+            [disabled]="isLoading()"
+            class="w-full py-3 px-4 bg-green-600 hover:bg-green-700 focus:bg-green-700 active:bg-green-800 disabled:bg-green-400 text-white font-semibold rounded-lg transition-all duration-300 ease-in-out transform hover:scale-[1.02] active:scale-[0.98] focus:outline-none focus:ring-4 focus:ring-green-200 shadow-lg hover:shadow-xl disabled:shadow-md disabled:cursor-not-allowed"
+            style="min-height: 48px; display: block;"
+          >
+            <span *ngIf="!isLoading()" class="flex items-center justify-center">
+              <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"></path>
+              </svg>
+              Iniciar Sesión
+            </span>
+            <span *ngIf="isLoading()" class="flex items-center justify-center">
+              <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              Iniciando sesión...
+            </span>
+          </button>
+        </div>
+
+        <!-- Forgot Password Link -->
+        <div class="text-center">
+          <a 
+            routerLink="/auth/password-restore" 
+            class="text-sm text-mallamas-green-600 hover:text-mallamas-green-500 font-medium transition-colors duration-200"
+          >
+            ¿Olvidó su contraseña?
+          </a>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

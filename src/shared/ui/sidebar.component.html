@@ -1,0 +1,163 @@
+<aside class="bg-white dark:bg-gray-800 shadow-lg w-64 min-h-screen fixed left-0 top-0 z-50">
+  <!-- Logo/Brand -->
+  <div class="p-6 border-b border-gray-200 dark:border-gray-700">
+    <div class="flex flex-col items-center space-y-3">
+      <div class="text-center">
+        <h1 class="text-xl font-extrabold mallamas-title tracking-wide">
+          MALLAMAS EPS-I
+        </h1>
+
+        <h2 class="text-sm font-bold text-gray-900 dark:text-gray-300 tracking-wide">
+          Plataforma de gestión para aportantes
+        </h2>
+
+        
+
+        @if (!isProduction) {
+          <div class="bg-yellow-100 dark:bg-yellow-900/30 border border-yellow-300 dark:border-yellow-700 rounded-lg px-3 py-2 mt-2">
+            <p class="text-xs text-yellow-800 dark:text-yellow-200 font-bold text-center">
+              Modo {{ appName.split(' - ')[1] }}
+            </p>
+          </div>
+        }
+        @if (appVersion) {
+          <p class="text-xs text-gray-400 dark:text-mallamas-green-200 font-semibold mt-1">
+            v{{ appVersion }}
+          </p>
+        }
+      </div>
+    </div>
+  </div>
+
+  <!-- Navigation Menu -->
+  <nav class="p-4">
+    <ul class="space-y-2">
+      @for (item of menuItems(); track item.id) {
+        <li>
+          <!-- Main Menu Item -->
+          @if (item.subItems && item.subItems.length > 0) {
+            <!-- Menu item with submenu -->
+            <button
+              (click)="toggleSubMenu(item.id)"
+              class="w-full flex items-center justify-between px-4 py-3 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white rounded-lg transition-all duration-200 cursor-pointer"
+            >
+              <div class="flex items-center space-x-3">
+                <span class="flex-shrink-0">
+                  @switch (item.icon) {
+                    @case ('dashboard') {
+                      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2h-2a2 2 0 00-2 2"></path>
+                      </svg>
+                    }
+                    @case ('settings') {
+                      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                      </svg>
+                    }
+                    @case ('key') {
+                      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                      </svg>
+                    }
+                    @default {
+                      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                      </svg>
+                    }
+                  }
+                </span>
+                <span class="font-medium">{{ item.title }}</span>
+              </div>
+              <!-- Chevron icon -->
+              <svg 
+                class="w-4 h-4 transition-transform duration-200"
+                [class.rotate-180]="isSubMenuOpen(item.id)"
+                fill="none" 
+                stroke="currentColor" 
+                viewBox="0 0 24 24"
+              >
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+              </svg>
+            </button>
+            
+            <!-- Submenu -->
+            @if (isSubMenuOpen(item.id)) {
+              <ul class="mt-2 ml-6 space-y-1">
+                @for (subItem of item.subItems; track subItem.id) {
+                  <li>
+                    <a
+                      [routerLink]="subItem.route"
+                      routerLinkActive="bg-mallamas-green-50 dark:bg-mallamas-green-900/20 text-mallamas-green-700 dark:text-mallamas-green-300"
+                      class="block px-4 py-2 text-sm text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white rounded-md transition-all duration-200"
+                    >
+                      {{ subItem.title }}
+                    </a>
+                  </li>
+                }
+              </ul>
+            }
+          } @else {
+            <!-- Regular menu item -->
+            <a
+              [routerLink]="item.route"
+              routerLinkActive="sidebar-active"
+              class="flex items-center space-x-3 px-4 py-3 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white rounded-lg transition-all duration-200"
+              [class]="item.isActive ? 'sidebar-active' : ''"
+            >
+              <span class="flex-shrink-0">
+                @switch (item.icon) {
+                  @case ('dashboard') {
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2h-2a2 2 0 00-2 2"></path>
+                    </svg>
+                  }
+                  @case ('key') {
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                    </svg>
+                  }
+                  @default {
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                    </svg>
+                  }
+                }
+              </span>
+              <span class="font-medium">{{ item.title }}</span>
+            </a>
+          }
+        </li>
+      }
+    </ul>
+  </nav>
+
+  <!-- User Section -->
+  <div class="absolute bottom-0 left-0 right-0 p-4 border-t border-gray-200 dark:border-gray-700">
+    <div class="flex items-center space-x-3">
+      <div class="w-8 h-8 bg-mallamas-green-600 dark:bg-mallamas-green-500 rounded-full flex items-center justify-center">
+        <span class="text-white text-sm font-medium">{{ userName.charAt(0).toUpperCase() }}</span>
+      </div>
+      <div class="flex-1 min-w-0">
+        <p class="text-sm font-medium text-gray-900 dark:text-white truncate">{{ userName }}</p>
+        <p class="text-xs text-gray-500 dark:text-gray-400 truncate">{{ userEmail }}</p>
+      </div>
+      <button 
+        class="text-gray-400 dark:text-gray-500 hover:text-red-600 dark:hover:text-red-400 transition-colors duration-200 p-1 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 cursor-pointer" 
+        (click)="logout()"
+        title="Cerrar sesión"
+      >
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+        </svg>
+      </button>
+    </div>
+  </div>
+</aside>
+
+<!-- Overlay for mobile -->
+<div 
+  class="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
+  [class.hidden]="!isMobileMenuOpen()"
+  (click)="toggleMobileMenu()"
+></div> 

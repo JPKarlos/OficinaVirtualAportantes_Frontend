@@ -1,0 +1,62 @@
+Target folder structure:
+
+src/
+  app/ (bootstrap, root routes and root component)
+  core/                # singletons only: http, interceptors, guards, global state, config tokens, utils, models
+    http/
+    interceptors/
+    guards/
+    services/
+    state/
+    config/
+    utils/
+    models/
+  shared/              # purely reusable & presentational: ui components, pipes, directives, validators, helpers, icons
+    ui/
+    directives/
+    pipes/
+    validators/
+    helpers/
+    icons/
+  features/            # one folder per feature; each encapsulates pages, components, data-access, state, models, routes
+    <feature>/
+      pages/
+      components/
+      data-access/     # <feature>.api.ts, <feature>.dto.ts, <feature>.mapper.ts, <feature>.repository.ts
+      state/           # <feature>.store.ts (Signals), <feature>.queries.ts
+      models/
+      routes.ts
+      index.ts
+  styles/
+    tailwind.css
+    tokens.css
+  assets/
+  environments/ (optional)
+  pages/ (optional for generic static pages)
+  main.ts
+  index.html
+  theme.css (optional)
+
+Architecture rules and conventions:
+- Standalone components and lazy routes per feature (features/<x>/routes.ts). No NgModules.
+- Core is for application-wide singletons and cross-cutting concerns; shared is pure UI and utilities (no providers).
+- Features are isolated and must not import other features.
+- Data access uses repositories that depend on an API service (HttpClient). Keep DTOs separate from UI/domain models and use a mapper to convert between them.
+- Use Signals in feature stores (signal, computed, effect). Create derived selectors in <feature>/state/<feature>.queries.ts.
+- Keep components in shared/ui fully presentational; move repeated patterns to reusable UI components instead of duplicating styles (DRY).
+- Provide an APP_CONFIG InjectionToken holding runtime configuration (apiBaseUrl, flags).
+- Add path aliases: @app/*, @core/*, @shared/*, @features/* in tsconfig.json.
+- Add unit tests colocated with source files (*.spec.ts). Favor tests for mappers, repositories and stores.
+- Tailwind: global directives in src/styles/tailwind.css. Use utility classes in templates; only add component CSS when necessary.
+
+Outputs I expect:
+1) The concrete file/folder tree under src/ with placeholder files where needed.
+2) Example code for:
+   - app.routes.ts (root routes with lazy loading)
+   - a sample feature: <feature>/routes.ts, <feature>/state/<feature>.store.ts (Signals), <feature>/data-access/*.ts (api, dto, mapper, repository) and <feature>/models/<feature>.model.ts
+   - core/config/app-config.token.ts and bootstrap in main.ts with providers
+3) tsconfig.json path aliases configuration.
+4) A sample shared UI component (Button) demonstrating Tailwind usage.
+5) Brief notes explaining how to add a new feature following the same pattern.
+
+Please generate idiomatic Angular 20 code with strict type checking, descriptive names, and minimal but complete examples.

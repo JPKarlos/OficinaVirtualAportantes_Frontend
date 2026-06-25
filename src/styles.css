@@ -1,0 +1,48 @@
+/* You can add global styles to this file, and also import other style files */
+@import "tailwindcss";
+
+/* Fix for white line at bottom - minimal approach */
+body {
+  margin: 0;
+  padding: 0;
+}
+
+/* Custom sidebar active styles */
+.sidebar-active {
+  background-color: #f0fdf4; /* green-50 equivalent */
+  color: #15803d; /* green-700 equivalent */
+  border: 2px solid #057A55; /* mallamas-green-600 */
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+.dark .sidebar-active {
+  background-color: rgba(20, 83, 45, 0.3); /* green-900/30 equivalent */
+  color: #86efac; /* green-300 equivalent */
+  border-color: #4ade80; /* green-400 equivalent */
+}
+
+/* Mallamas Green Title */
+.mallamas-title {
+  color: #30C48D; /* Custom mallamas green */
+}
+
+.dark .mallamas-title {
+  color: #30C48D; /* Custom mallamas green for dark mode */
+}
+
+/* Edit Button Colors */
+.edit-button {
+  color: #057A55 !important; /* mallamas-green-600 */
+}
+
+.dark .edit-button {
+  color: #4ade80 !important; /* mallamas-green-400 */
+}
+
+.edit-button:hover {
+  color: #006400 !important; /* mallamas-green-700 */
+}
+
+.dark .edit-button:hover {
+  color: #86efac !important; /* mallamas-green-300 */
+}

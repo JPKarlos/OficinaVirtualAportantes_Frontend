@@ -1,0 +1,129 @@
+@if (open()) {
+  <div
+    class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="afiliados-modal-title"
+    (click)="onBackdropClick($event)"
+  >
+    <div class="flex max-h-[90vh] w-full max-w-6xl flex-col overflow-hidden rounded-lg bg-white shadow-xl">
+      <div class="flex items-start justify-between border-b border-gray-200 px-6 py-4">
+        <div>
+          <h2 id="afiliados-modal-title" class="text-xl font-bold text-gray-900">
+            Afiliados asociados al aportante
+          </h2>
+          <p class="mt-1 text-sm text-gray-500">
+            @if (aportanteId()) {
+              Aportante ID: {{ aportanteId() }}
+              @if (total() > 0 && !isLoading()) {
+                · {{ total() }} registro(s)
+              }
+            }
+          </p>
+        </div>
+        <button
+          type="button"
+          (click)="close()"
+          class="rounded-md p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-600"
+          aria-label="Cerrar"
+        >
+          <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+          </svg>
+        </button>
+      </div>
+
+      <div class="flex-1 overflow-auto px-6 py-4">
+        @if (isLoading()) {
+          <div class="flex items-center justify-center gap-3 py-12 text-sm text-gray-600">
+            <svg class="h-6 w-6 animate-spin text-green-600" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            Consultando afiliados...
+          </div>
+        } @else if (errorMessage()) {
+          <div class="rounded-md border border-red-200 bg-red-50 p-4 text-sm text-red-800">
+            {{ errorMessage() }}
+          </div>
+        } @else if (afiliados().length === 0) {
+          <div class="rounded-md border border-gray-200 bg-gray-50 p-8 text-center text-sm text-gray-600">
+            No se encontraron afiliados asociados a este aportante.
+          </div>
+        } @else {
+          <div class="mb-4 rounded-lg border border-green-200 bg-green-50 px-4 py-3">
+            <div class="grid grid-cols-1 gap-2 sm:grid-cols-2">
+              <div>
+                <p class="text-xs font-medium uppercase tracking-wide text-green-700">
+                  Identificación aportante
+                </p>
+                <p class="text-sm font-semibold text-gray-900">{{ identificacionAportante() }}</p>
+              </div>
+              <div>
+                <p class="text-xs font-medium uppercase tracking-wide text-green-700">
+                  Razón social
+                </p>
+                <p class="text-sm font-semibold text-gray-900">{{ nombreRazonSocial() }}</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="mb-3 flex justify-end">
+            <button
+              type="button"
+              (click)="exportToExcel()"
+              class="inline-flex items-center gap-2 rounded-md border border-green-600 bg-green-600 px-4 py-2 text-sm font-medium text-white hover:bg-green-700"
+            >
+              <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5-5 5 5M12 5v12"></path>
+              </svg>
+              Exportar a Excel
+            </button>
+          </div>
+
+          <div class="overflow-x-auto rounded-lg border border-gray-200">
+            <table class="min-w-full divide-y divide-gray-200 text-sm">
+              <thead class="bg-gray-50">
+                <tr>
+                  <th scope="col" class="px-3 py-3 text-left font-semibold text-gray-700">Tipo</th>
+                  <th scope="col" class="px-3 py-3 text-left font-semibold text-gray-700">Documento</th>
+                  <th scope="col" class="px-3 py-3 text-left font-semibold text-gray-700">Nombre completo</th>
+                  <th scope="col" class="px-3 py-3 text-left font-semibold text-gray-700">Tipo cotizante</th>
+                  <th scope="col" class="px-3 py-3 text-left font-semibold text-gray-700">Estado rel. laboral</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-gray-100 bg-white">
+                @for (afiliado of afiliados(); track afiliado.historicoId) {
+                  <tr class="hover:bg-gray-50">
+                    <td class="px-3 py-3 text-gray-900">{{ displayValue(afiliado.tipo) }}</td>
+                    <td class="px-3 py-3 text-gray-900">{{ displayValue(afiliado.documento) }}</td>
+                    <td class="px-3 py-3 text-gray-900">{{ displayValue(afiliado.nombreCompleto) }}</td>
+                    <td class="px-3 py-3 text-gray-600">{{ displayValue(afiliado.tipoCotizante) }}</td>
+                    <td class="px-3 py-3">
+                      <span
+                        class="inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium"
+                        [ngClass]="estadoBadgeClass(afiliado.estadoRelacionLaboral)"
+                      >
+                        {{ formatEstado(afiliado.estadoRelacionLaboral) }}
+                      </span>
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        }
+      </div>
+
+      <div class="flex justify-end border-t border-gray-200 px-6 py-4">
+        <button
+          type="button"
+          (click)="close()"
+          class="inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+        >
+          Cerrar
+        </button>
+      </div>
+    </div>
+  </div>
+}

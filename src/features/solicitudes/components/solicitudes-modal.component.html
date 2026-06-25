@@ -1,0 +1,269 @@
+@if (open()) {
+  <div
+    class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="solicitudes-modal-title"
+    (click)="onBackdropClick($event)"
+  >
+    <div class="flex max-h-[90vh] w-full max-w-5xl flex-col overflow-hidden rounded-lg bg-white shadow-xl">
+      <div class="flex items-start justify-between border-b border-gray-200 px-6 py-4">
+        <div>
+          <h2 id="solicitudes-modal-title" class="text-xl font-bold text-gray-900">
+            @if (vista() === 'listado') {
+              Solicitudes
+            } @else {
+              Nueva solicitud
+            }
+          </h2>
+          <p class="mt-1 text-sm text-gray-500">
+            @if (vista() === 'listado') {
+              Solicitudes en trámite del aportante
+              @if (aportanteId()) {
+                · ID {{ aportanteId() }}
+              }
+              @if (total() > 0 && !isLoading()) {
+                · {{ total() }} registro(s)
+              }
+            } @else {
+              Seleccione el tipo de novedad, registre la observación y cargue los soportes.
+            }
+          </p>
+        </div>
+        <button
+          type="button"
+          (click)="close()"
+          class="rounded-md p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-600"
+          aria-label="Cerrar"
+        >
+          <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+          </svg>
+        </button>
+      </div>
+
+      <div class="flex min-h-0 flex-1 flex-col overflow-auto px-6 py-4">
+        @if (vista() === 'listado') {
+          <div class="mb-4 flex justify-end">
+            <button
+              type="button"
+              (click)="abrirNuevaSolicitud()"
+              class="inline-flex items-center gap-2 rounded-md border border-teal-600 bg-teal-600 px-4 py-2 text-sm font-medium text-white hover:bg-teal-700"
+            >
+              <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+              </svg>
+              Nueva solicitud
+            </button>
+          </div>
+
+          @if (isLoading()) {
+            <div class="flex flex-1 items-center justify-center gap-3 py-12 text-sm text-gray-600">
+              <svg class="h-6 w-6 animate-spin text-teal-600" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              Consultando solicitudes...
+            </div>
+          } @else if (errorMessage()) {
+            <div class="rounded-md border border-red-200 bg-red-50 p-4 text-sm text-red-800">
+              {{ errorMessage() }}
+            </div>
+          } @else if (solicitudes().length === 0) {
+            <div class="rounded-md border border-gray-200 bg-gray-50 p-8 text-center text-sm text-gray-600">
+              No hay solicitudes en trámite para este aportante.
+            </div>
+          } @else {
+            <div class="overflow-auto rounded-lg border border-gray-200">
+              <table class="min-w-full divide-y divide-gray-200 text-sm">
+                <thead class="bg-gray-50">
+                  <tr>
+                    <th class="px-3 py-3 text-left font-semibold text-gray-700">Radicado</th>
+                    <th class="px-3 py-3 text-left font-semibold text-gray-700">Fecha</th>
+                    <th class="px-3 py-3 text-left font-semibold text-gray-700">Tipo novedad</th>
+                    <th class="px-3 py-3 text-left font-semibold text-gray-700">Estado</th>
+                    <th class="px-3 py-3 text-left font-semibold text-gray-700">Docs.</th>
+                    <th class="px-3 py-3 text-left font-semibold text-gray-700">Observación</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-100 bg-white">
+                  @for (item of solicitudes(); track item.solicitudesId) {
+                    <tr class="hover:bg-gray-50">
+                      <td class="px-3 py-3 font-medium text-gray-900 whitespace-nowrap">{{ displayValue(item.radicacion) }}</td>
+                      <td class="px-3 py-3 text-gray-600 whitespace-nowrap">{{ formatDate(item.fechaRadicacion) }}</td>
+                      <td class="px-3 py-3 text-gray-900">{{ displayValue(item.tipoNovedad) }}</td>
+                      <td class="px-3 py-3 whitespace-nowrap">
+                        <span class="rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-800">
+                          {{ displayValue(item.estadoSolicitud) }}
+                        </span>
+                      </td>
+                      <td class="px-3 py-3 text-gray-600 whitespace-nowrap">{{ displayValue(item.cantidadDocumentosCargados) }}</td>
+                      <td class="max-w-xs px-3 py-3 text-gray-600 break-words">{{ displayValue(item.observacion) }}</td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+          }
+        } @else {
+          <section aria-labelledby="tipos-novedad-heading">
+            <h3 id="tipos-novedad-heading" class="mb-3 text-sm font-semibold uppercase tracking-wide text-gray-700">
+              Tipo de novedad
+            </h3>
+
+            <ul class="space-y-2" role="list">
+              @for (tipo of tiposNovedad; track tipo.id) {
+                <li>
+                  <label
+                    class="flex cursor-pointer items-start gap-3 rounded-lg border p-4 transition-colors"
+                    [class.border-teal-500]="isSelected(tipo.id)"
+                    [class.bg-teal-50]="isSelected(tipo.id)"
+                    [class.border-gray-200]="!isSelected(tipo.id)"
+                    [class.hover:border-teal-300]="!isSelected(tipo.id)"
+                  >
+                    <input
+                      type="radio"
+                      name="tipo-novedad"
+                      class="mt-1 h-4 w-4 border-gray-300 text-teal-600 focus:ring-teal-500"
+                      [checked]="isSelected(tipo.id)"
+                      (change)="seleccionarTipo(tipo.id)"
+                    />
+                    <span class="flex-1">
+                      <span class="block font-semibold text-gray-900">{{ tipo.label }}</span>
+                      <span class="mt-0.5 block text-sm text-gray-600">{{ tipo.descripcion }}</span>
+                    </span>
+                  </label>
+                </li>
+              }
+            </ul>
+          </section>
+
+          <section class="mt-6">
+            <label for="solicitud-observacion" class="mb-1 block text-sm font-medium text-gray-700">
+              Observación
+            </label>
+            <textarea
+              id="solicitud-observacion"
+              rows="3"
+              [value]="observacion()"
+              (input)="onObservacionInput($event)"
+              placeholder="Describa el detalle de la solicitud..."
+              class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:border-teal-600 focus:outline-none focus:ring-1 focus:ring-teal-600"
+            ></textarea>
+          </section>
+
+          @if (tipoNovedadActivo(); as config) {
+            <section class="mt-6" aria-labelledby="documentos-requeridos-heading">
+              <div class="mb-3 flex flex-wrap items-center justify-between gap-2">
+                <h3 id="documentos-requeridos-heading" class="text-sm font-semibold uppercase tracking-wide text-gray-700">
+                  Documentos requeridos — {{ config.label }}
+                </h3>
+                <span class="rounded-full bg-teal-100 px-3 py-1 text-xs font-medium text-teal-800">
+                  {{ totalDocumentosObligatorios() }} obligatorio(s)
+                </span>
+              </div>
+
+              <ul class="space-y-3" role="list">
+                @for (doc of config.documentos; track doc.id) {
+                  <li class="rounded-lg border border-gray-200 bg-gray-50 p-4">
+                    <div class="flex flex-wrap items-start justify-between gap-3">
+                      <div class="min-w-0 flex-1">
+                        <div class="flex flex-wrap items-center gap-2">
+                          <h4 class="font-medium text-gray-900">{{ doc.nombre }}</h4>
+                          @if (doc.obligatorio) {
+                            <span class="rounded bg-red-100 px-2 py-0.5 text-xs font-medium text-red-700">
+                              Obligatorio
+                            </span>
+                          } @else {
+                            <span class="rounded bg-gray-200 px-2 py-0.5 text-xs font-medium text-gray-700">
+                              Opcional
+                            </span>
+                          }
+                        </div>
+                        <p class="mt-1 text-sm text-gray-600">{{ doc.descripcion }}</p>
+                        <p class="mt-2 text-xs text-gray-500">
+                          Formatos: {{ formatosLabel(doc.formatosPermitidos) }}
+                        </p>
+                        @if (tieneArchivo(doc.id)) {
+                          <p class="mt-1 text-xs font-medium text-teal-700">
+                            Archivo: {{ getArchivoNombre(doc.id) }}
+                          </p>
+                        }
+                      </div>
+
+                      <label class="inline-flex shrink-0 cursor-pointer items-center gap-1.5 rounded-md border border-teal-600 bg-white px-3 py-1.5 text-xs font-medium text-teal-700 hover:bg-teal-50">
+                        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path>
+                        </svg>
+                        Cargar archivo
+                        <input
+                          type="file"
+                          class="hidden"
+                          (change)="onFileSelected(doc, $event)"
+                        />
+                      </label>
+                    </div>
+                  </li>
+                }
+              </ul>
+            </section>
+          } @else {
+            <div class="mt-6 rounded-lg border border-dashed border-gray-300 bg-gray-50 p-8 text-center text-sm text-gray-500">
+              Seleccione un tipo de novedad para ver los documentos a cargar.
+            </div>
+          }
+
+          @if (saveMessage()) {
+            <div class="mt-4 rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-800">
+              {{ saveMessage() }}
+            </div>
+          }
+        }
+      </div>
+
+      <div class="flex justify-between border-t border-gray-200 px-6 py-4">
+        <div>
+          @if (vista() === 'nueva') {
+            <button
+              type="button"
+              (click)="volverAlListado()"
+              [disabled]="isSaving()"
+              class="inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-60"
+            >
+              Volver
+            </button>
+          }
+        </div>
+
+        <div class="flex gap-2">
+          @if (vista() === 'nueva') {
+            <button
+              type="button"
+              (click)="guardarSolicitud()"
+              [disabled]="isSaving()"
+              class="inline-flex items-center gap-2 rounded-md border border-teal-600 bg-teal-600 px-4 py-2 text-sm font-medium text-white hover:bg-teal-700 disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              @if (isSaving()) {
+                <svg class="h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                Guardando...
+              } @else {
+                Guardar solicitud
+              }
+            </button>
+          }
+
+          <button
+            type="button"
+            (click)="close()"
+            class="inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+          >
+            Cerrar
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+}
