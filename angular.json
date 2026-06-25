@@ -67,6 +67,18 @@
               "optimization": false,
               "extractLicenses": false,
               "sourceMap": true
+            },
+            "test": {
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.dev.ts"
+                }
+              ],
+              "optimization": true,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "outputHashing": "all"
             }
           },
           "defaultConfiguration": "production"
