@@ -16,6 +16,7 @@ import {
   formatEstadoRelacionLaboral,
   formatIdentificacionCompletaAportante,
 } from '../utils/afiliados-excel.export';
+import { generateCertificadoAfiliacionPdf } from '../utils/certificado-afiliacion.pdf';
 
 @Component({
   selector: 'app-afiliados-asociados-modal',
@@ -32,6 +33,7 @@ export class AfiliadosAsociadosModalComponent {
   closed = output<void>();
 
   isLoading = signal(false);
+  generatingCertificadoHistoricoId = signal<number | null>(null);
   errorMessage = signal('');
   afiliados = signal<AfiliadoAsociado[]>([]);
   total = signal(0);
@@ -114,6 +116,20 @@ export class AfiliadosAsociadosModalComponent {
       this.identificacionAportante(),
       this.nombreRazonSocial(),
     );
+  }
+
+  isGeneratingCertificado(historicoId: number): boolean {
+    return this.generatingCertificadoHistoricoId() === historicoId;
+  }
+
+  generateCertificadoAfiliacion(afiliado: AfiliadoAsociado): void {
+    this.generatingCertificadoHistoricoId.set(afiliado.historicoId);
+
+    try {
+      generateCertificadoAfiliacionPdf(afiliado);
+    } finally {
+      this.generatingCertificadoHistoricoId.set(null);
+    }
   }
 
   private async loadAfiliados(): Promise<void> {

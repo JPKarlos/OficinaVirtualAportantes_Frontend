@@ -6,9 +6,6 @@
         <p class="mt-2 text-sm text-gray-600">
           Revise y actualice la información del aportante. Los datos se cargan desde la base de datos según su usuario autenticado.
         </p>
-        @if (aportanteId()) {
-          <p class="mt-1 text-sm text-gray-500">Aportante ID: {{ aportanteId() }}</p>
-        }
       </div>
 
       @if (isLoadingData()) {

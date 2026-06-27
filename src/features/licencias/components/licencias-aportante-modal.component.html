@@ -12,14 +12,9 @@
           <h2 id="licencias-modal-title" class="text-xl font-bold text-gray-900">
             Prestaciones Económicas x Aportante - Licencias
           </h2>
-          <p class="mt-1 text-sm text-gray-500">
-            @if (aportanteId()) {
-              Aportante ID: {{ aportanteId() }}
-              @if (total() > 0 && !isLoading()) {
-                · {{ total() }} registro(s)
-              }
-            }
-          </p>
+          @if (total() > 0 && !isLoading()) {
+            <p class="mt-1 text-sm text-gray-500">{{ total() }} registro(s)</p>
+          }
         </div>
         <button
           type="button"

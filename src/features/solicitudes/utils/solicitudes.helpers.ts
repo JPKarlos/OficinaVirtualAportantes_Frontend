@@ -1,3 +1,9 @@
+export const FORMATOS_CARGA_SOLICITUDES = ['PDF', 'JPG', 'PNG', 'DOCX'] as const;
+
+export function formatosCargaLabel(): string {
+  return FORMATOS_CARGA_SOLICITUDES.join(', ');
+}
+
 export function formatDateValue(value: string | null | undefined): string {
   if (!value) {
     return '';

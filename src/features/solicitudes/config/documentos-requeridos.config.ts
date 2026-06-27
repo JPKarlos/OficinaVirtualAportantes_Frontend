@@ -140,7 +140,7 @@ export const TIPOS_NOVEDAD_SOLICITUD: TipoNovedadConfig[] = [
     tipoNovedadId: 2,
     label: 'Relación Laboral (N06)',
     descripcion:
-      'Vinculación, actualización o terminación de la relación laboral del cotizante.',
+      'Vinculación o actualización de la relación laboral del cotizante.',
     documentos: [
       {
         id: 'rl-contrato',
@@ -176,6 +176,50 @@ export const TIPOS_NOVEDAD_SOLICITUD: TipoNovedadConfig[] = [
         obligatorio: false,
         formatosPermitidos: ['PDF'],
         ejemploNombreArchivo: 'Certificado_afiliacion_anterior.pdf',
+      },
+    ],
+  },
+  {
+    id: 'terminacion-relacion-laboral',
+    tipoNovedadId: 5,
+    label: 'Terminación Relación Laboral (N11)',
+    descripcion:
+      'Reporte de retiro del cotizante por terminación de la relación laboral con el aportante.',
+    documentos: [
+      {
+        id: 'trl-fua-novedad',
+        nombre: 'Formato único de novedad N11',
+        descripcion:
+          'Formulario de novedad de terminación de relación laboral debidamente diligenciado y firmado.',
+        obligatorio: true,
+        formatosPermitidos: ['PDF'],
+        ejemploNombreArchivo: 'FUA_terminacion_N11.pdf',
+      },
+      {
+        id: 'trl-carta-terminacion',
+        nombre: 'Carta o documento de terminación del contrato',
+        descripcion:
+          'Documento firmado por el aportante que acredite la terminación de la relación laboral, con fecha de retiro.',
+        obligatorio: true,
+        formatosPermitidos: ['PDF', 'DOCX'],
+        ejemploNombreArchivo: 'Carta_terminacion_contrato.pdf',
+      },
+      {
+        id: 'trl-documento-id',
+        nombre: 'Documento de identidad del cotizante',
+        descripcion: 'Copia legible del documento de identidad del afiliado.',
+        obligatorio: true,
+        formatosPermitidos: ['PDF', 'JPG', 'PNG'],
+        ejemploNombreArchivo: 'Documento_cotizante.pdf',
+      },
+      {
+        id: 'trl-liquidacion',
+        nombre: 'Liquidación laboral o finiquito',
+        descripcion:
+          'Documento de liquidación definitiva de prestaciones, si aplica.',
+        obligatorio: false,
+        formatosPermitidos: ['PDF'],
+        ejemploNombreArchivo: 'Liquidacion_laboral.pdf',
       },
     ],
   },

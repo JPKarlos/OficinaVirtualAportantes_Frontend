@@ -2,7 +2,8 @@ export type TipoNovedadSolicitud =
   | 'movilidad'
   | 'licencia'
   | 'incapacidad'
-  | 'relacion-laboral';
+  | 'relacion-laboral'
+  | 'terminacion-relacion-laboral';
 
 export interface DocumentoRequerido {
   id: string;

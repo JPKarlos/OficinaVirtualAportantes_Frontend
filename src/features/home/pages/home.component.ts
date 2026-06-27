@@ -27,6 +27,9 @@ export default class HomeComponent implements OnInit {
   showQuickActions = computed(
     () => this.authService.estadoActualizacion()?.estado === 'MENOR_6_MESES',
   );
+  nombreRazonSocial = computed(
+    () => this.authService.estadoActualizacion()?.nombreRazonSocial ?? null,
+  );
   showAfiliadosModal = signal(false);
   showMoraModal = signal(false);
   showIncapacidadesModal = signal(false);

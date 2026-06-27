@@ -5,7 +5,12 @@
       <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
         <div class="flex items-center justify-between">
           <div>
-            <h1 class="text-3xl font-bold text-gray-900">Bienvenido</h1>
+            <h1 class="text-3xl font-bold text-gray-900">
+              Bienvenido
+              @if (nombreRazonSocial()) {
+                <span class="text-green-700">- {{ nombreRazonSocial() }}</span>
+              }
+            </h1>
             <p class="mt-2 text-gray-600">Oficina Virtual Aportantes - Mallamas EPS</p>
           </div>
           <div class="flex items-center space-x-4">
@@ -29,74 +34,26 @@
         [isLoading]="isValidating()"
         (buttonClicked)="onValidationButtonClicked($event)">
       </app-data-validation-message>
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        
-        <!-- Welcome Card -->
-        <div class="bg-white overflow-hidden shadow rounded-lg">
-          <div class="p-6">
-            <div class="flex items-center">
-              <div class="flex-shrink-0">
-                <div class="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
-                  <span class="text-white text-sm font-bold">👋</span>
-                </div>
-              </div>
-              <div class="ml-4">
-                <h3 class="text-lg font-medium text-gray-900">Bienvenido</h3>
-                <p class="text-sm text-gray-500">Sistema de gestión de aportantes</p>
+      <!-- Welcome Card -->
+      <div class="bg-white overflow-hidden shadow rounded-lg w-full">
+        <div class="p-6">
+          <div class="flex items-center">
+            <div class="flex-shrink-0">
+              <div class="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
+                <span class="text-white text-sm font-bold">👋</span>
               </div>
             </div>
-            <div class="mt-4">
-              <p class="text-sm text-gray-600">
-                Accede a todos los servicios disponibles para los aportantes de Mallamas EPS.
-              </p>
+            <div class="ml-4">
+              <h3 class="text-lg font-medium text-gray-900">Bienvenido</h3>
+              <p class="text-sm text-gray-500">Sistema de gestión de aportantes</p>
             </div>
           </div>
-        </div>
-
-        <!-- Services Card -->
-        <div class="bg-white overflow-hidden shadow rounded-lg">
-          <div class="p-6">
-            <div class="flex items-center">
-              <div class="flex-shrink-0">
-                <div class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
-                  <span class="text-white text-sm font-bold">⚙️</span>
-                </div>
-              </div>
-              <div class="ml-4">
-                <h3 class="text-lg font-medium text-gray-900">Servicios</h3>
-                <p class="text-sm text-gray-500">Acceso a servicios en línea</p>
-              </div>
-            </div>
-            <div class="mt-4">
-              <p class="text-sm text-gray-600">
-                Consulta tu información personal, documentos y trámites disponibles.
-              </p>
-            </div>
+          <div class="mt-4">
+            <p class="text-sm text-gray-600">
+              Accede a todos los servicios disponibles para los aportantes de Mallamas EPS.
+            </p>
           </div>
         </div>
-
-        <!-- Support Card -->
-        <div class="bg-white overflow-hidden shadow rounded-lg">
-          <div class="p-6">
-            <div class="flex items-center">
-              <div class="flex-shrink-0">
-                <div class="w-8 h-8 bg-purple-500 rounded-full flex items-center justify-center">
-                  <span class="text-white text-sm font-bold">📞</span>
-                </div>
-              </div>
-              <div class="ml-4">
-                <h3 class="text-lg font-medium text-gray-900">Soporte</h3>
-                <p class="text-sm text-gray-500">Ayuda y contacto</p>
-              </div>
-            </div>
-            <div class="mt-4">
-              <p class="text-sm text-gray-600">
-                Encuentra ayuda, contacta con soporte técnico o consulta información adicional.
-              </p>
-            </div>
-          </div>
-        </div>
-
       </div>
 
       @if (showQuickActions()) {

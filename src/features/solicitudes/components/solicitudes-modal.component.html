@@ -19,9 +19,6 @@
           <p class="mt-1 text-sm text-gray-500">
             @if (vista() === 'listado') {
               Solicitudes en trámite del aportante
-              @if (aportanteId()) {
-                · ID {{ aportanteId() }}
-              }
               @if (total() > 0 && !isLoading()) {
                 · {{ total() }} registro(s)
               }
@@ -106,6 +103,18 @@
             </div>
           }
         } @else {
+          <div
+            class="mb-5 rounded-md border border-blue-200 bg-blue-50 px-4 py-3 text-sm text-blue-900"
+            role="note"
+            aria-label="Formatos permitidos para cargar archivos"
+          >
+            <p class="font-medium">Formatos permitidos para la carga de archivos</p>
+            <p class="mt-1 text-blue-800">
+              Puede adjuntar soportes en <strong>{{ formatosCargaAviso }}</strong>, según lo indicado en cada documento.
+              La extensión del archivo debe coincidir con el formato permitido (por ejemplo, .pdf, .jpg, .png o .docx).
+            </p>
+          </div>
+
           <section aria-labelledby="tipos-novedad-heading">
             <h3 id="tipos-novedad-heading" class="mb-3 text-sm font-semibold uppercase tracking-wide text-gray-700">
               Tipo de novedad

@@ -22,6 +22,7 @@ import {
 } from '../interfaces/solicitud-novedad.interface';
 import {
   formatDateValue,
+  formatosCargaLabel,
   isFormatAllowed,
 } from '../utils/solicitudes.helpers';
 
@@ -131,6 +132,8 @@ export class SolicitudesModalComponent {
   formatosLabel(formatos: string[]): string {
     return formatos.join(', ');
   }
+
+  readonly formatosCargaAviso = formatosCargaLabel();
 
   formatDate(value: string | null | undefined): string {
     const formatted = formatDateValue(value);
