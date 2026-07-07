@@ -43,3 +43,5 @@ export interface CreateAportanteResponse {
 
 export type UpdateAportanteRequest = CreateAportanteRequest;
 export type UpdateAportanteResponse = CreateAportanteResponse;
+export type UpdateMisDatosRequest = CreateAportanteRequest;
+export type UpdateMisDatosResponse = CreateAportanteResponse;

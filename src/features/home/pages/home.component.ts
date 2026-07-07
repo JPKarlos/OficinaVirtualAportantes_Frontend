@@ -109,4 +109,8 @@ export default class HomeComponent implements OnInit {
   closeSolicitudesModal(): void {
     this.showSolicitudesModal.set(false);
   }
+
+  goToActualizarMisDatos(): void {
+    this.router.navigate(['/aportantes/actualizar-mis-datos']);
+  }
 }

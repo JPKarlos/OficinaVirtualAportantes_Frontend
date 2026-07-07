@@ -7,6 +7,8 @@ import {
   CreateAportanteResponse,
   UpdateAportanteRequest,
   UpdateAportanteResponse,
+  UpdateMisDatosRequest,
+  UpdateMisDatosResponse,
 } from '../interfaces/create-aportante.interface';
 import { AportanteDetail } from '../interfaces/aportante-detail.interface';
 
@@ -36,6 +38,18 @@ export class AportantesService {
     return firstValueFrom(
       this.http.put<UpdateAportanteResponse>(
         `${this.baseUrl}/aportantes/${aportanteId}`,
+        payload,
+      ),
+    );
+  }
+
+  async updateMisDatos(
+    aportanteId: number,
+    payload: UpdateMisDatosRequest,
+  ): Promise<UpdateMisDatosResponse> {
+    return firstValueFrom(
+      this.http.put<UpdateMisDatosResponse>(
+        `${this.baseUrl}/aportantes/${aportanteId}/mis-datos`,
         payload,
       ),
     );
