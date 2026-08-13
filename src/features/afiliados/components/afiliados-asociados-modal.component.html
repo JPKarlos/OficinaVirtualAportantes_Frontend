@@ -63,11 +63,45 @@
             </div>
           </div>
 
-          <div class="mb-3 flex justify-end">
+          <div class="mb-3 shrink-0 flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
+            <div class="w-full lg:max-w-md">
+              <label for="afiliados-search" class="mb-1 block text-sm font-medium text-gray-700">
+                Buscar registro
+              </label>
+              <div class="relative">
+                <input
+                  id="afiliados-search"
+                  type="search"
+                  [value]="searchTerm()"
+                  (input)="onSearchInput($event)"
+                  placeholder="Documento, nombre, tipo cotizante, estado rel. laboral..."
+                  class="w-full rounded-md border border-gray-300 py-2 pl-3 pr-10 text-sm text-gray-900 placeholder:text-gray-400 focus:border-green-600 focus:outline-none focus:ring-1 focus:ring-green-600"
+                />
+                @if (tieneFiltroActivo()) {
+                  <button
+                    type="button"
+                    (click)="clearSearch()"
+                    class="absolute inset-y-0 right-0 flex items-center px-3 text-gray-400 hover:text-gray-600"
+                    aria-label="Limpiar búsqueda"
+                  >
+                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                  </button>
+                }
+              </div>
+              @if (tieneFiltroActivo()) {
+                <p class="mt-1 text-xs text-gray-500">
+                  Mostrando {{ totalFiltrado() }} de {{ total() }} registro(s)
+                </p>
+              }
+            </div>
+
             <button
               type="button"
               (click)="exportToExcel()"
-              class="inline-flex items-center gap-2 rounded-md border border-green-600 bg-green-600 px-4 py-2 text-sm font-medium text-white hover:bg-green-700"
+              [disabled]="afiliadosFiltrados().length === 0"
+              class="inline-flex items-center gap-2 self-end rounded-md border border-green-600 bg-green-600 px-4 py-2 text-sm font-medium text-white hover:bg-green-700 disabled:cursor-not-allowed disabled:opacity-60"
             >
               <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5-5 5 5M12 5v12"></path>
@@ -76,6 +110,11 @@
             </button>
           </div>
 
+          @if (afiliadosFiltrados().length === 0) {
+            <div class="flex items-center justify-center rounded-lg border border-gray-200 bg-gray-50 p-8 text-center text-sm text-gray-600">
+              No se encontraron registros que coincidan con la búsqueda.
+            </div>
+          } @else {
           <div class="overflow-x-auto rounded-lg border border-gray-200">
             <table class="min-w-full divide-y divide-gray-200 text-sm">
               <thead class="bg-gray-50">
@@ -89,7 +128,7 @@
                 </tr>
               </thead>
               <tbody class="divide-y divide-gray-100 bg-white">
-                @for (afiliado of afiliados(); track afiliado.historicoId) {
+                @for (afiliado of afiliadosFiltrados(); track afiliado.historicoId) {
                   <tr class="hover:bg-gray-50">
                     <td class="px-3 py-3 text-gray-900">{{ displayValue(afiliado.tipo) }}</td>
                     <td class="px-3 py-3 text-gray-900">{{ displayValue(afiliado.documento) }}</td>
@@ -126,6 +165,7 @@
               </tbody>
             </table>
           </div>
+          }
         }
       </div>
 

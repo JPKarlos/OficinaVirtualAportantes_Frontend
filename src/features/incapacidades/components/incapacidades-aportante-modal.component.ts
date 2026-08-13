@@ -86,6 +86,11 @@ export class IncapacidadesAportanteModalComponent {
     }
   }
 
+  esEstadoPagoPagada(item: IncapacidadAportante): boolean {
+    const estado = item.estadoPago?.trim().toLowerCase();
+    return estado === 'pagada' || estado === 'pagado';
+  }
+
   displayValue(value: string | number | null | undefined): string {
     if (value === null || value === undefined || value === '') {
       return '—';
@@ -97,6 +102,34 @@ export class IncapacidadesAportanteModalComponent {
   formatDate(value: string | null | undefined): string {
     const formatted = formatDateValue(value);
     return formatted || '—';
+  }
+
+  async verSoportePago(item: IncapacidadAportante): Promise<void> {
+    const aportanteId = this.aportanteId();
+
+    if (!aportanteId || !item.afiliadoId) {
+      return;
+    }
+
+    try {
+      const { blob, fileName } =
+        await this.incapacidadesService.downloadSoportePago(
+          aportanteId,
+          item.afiliadoId,
+          item.incapacidadId,
+        );
+
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = fileName;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      setTimeout(() => window.URL.revokeObjectURL(url), 10_000);
+    } catch {
+      // No se pudo obtener el soporte de pago
+    }
   }
 
   exportToExcel(): void {

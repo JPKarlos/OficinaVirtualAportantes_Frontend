@@ -20,4 +20,29 @@ export class IncapacidadesAportanteService {
       ),
     );
   }
+
+  async downloadSoportePago(
+    aportanteId: number,
+    afiliadoId: number,
+    incapacidadId: number,
+  ): Promise<{ blob: Blob; fileName: string }> {
+    const response = await firstValueFrom(
+      this.http.get(
+        `${this.baseUrl}/aportantes/${aportanteId}/afiliados/${afiliadoId}/incapacidades/${incapacidadId}/soporte-pago`,
+        {
+          responseType: 'blob',
+          observe: 'response',
+        },
+      ),
+    );
+
+    const disposition = response.headers.get('Content-Disposition') ?? '';
+    const match = disposition.match(/filename="?([^"]+)"?/i);
+    const fileName = match?.[1] ?? 'soporte-pago';
+
+    return {
+      blob: response.body as Blob,
+      fileName,
+    };
+  }
 }

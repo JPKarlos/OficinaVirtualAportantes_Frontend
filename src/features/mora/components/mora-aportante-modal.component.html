@@ -91,43 +91,85 @@
             </div>
           </div>
 
-          <div class="mb-3 flex flex-wrap justify-end gap-3">
+          <div class="mb-3 flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
+            <div class="w-full lg:max-w-md">
+              <label for="mora-search" class="mb-1 block text-sm font-medium text-gray-700">
+                Buscar registro
+              </label>
+              <div class="relative">
+                <input
+                  id="mora-search"
+                  type="search"
+                  [value]="searchTerm()"
+                  (input)="onSearchInput($event)"
+                  placeholder="Documento, nombre, tipo cotizante, régimen, estado afiliación..."
+                  class="w-full rounded-md border border-gray-300 py-2 pl-3 pr-10 text-sm text-gray-900 placeholder:text-gray-400 focus:border-orange-600 focus:outline-none focus:ring-1 focus:ring-orange-600"
+                />
+                @if (tieneFiltroActivo()) {
+                  <button
+                    type="button"
+                    (click)="clearSearch()"
+                    class="absolute inset-y-0 right-0 flex items-center px-3 text-gray-400 hover:text-gray-600"
+                    aria-label="Limpiar búsqueda"
+                  >
+                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                  </button>
+                }
+              </div>
+              @if (tieneFiltroActivo()) {
+                <p class="mt-1 text-xs text-gray-500">
+                  Mostrando {{ totalFiltrado() }} de {{ total() }} registro(s)
+                </p>
+              }
+            </div>
+
             @if (certificadoMoraErrorMessage()) {
-              <div class="mr-auto w-full rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-800">
+              <div class="w-full rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-800 lg:max-w-sm">
                 {{ certificadoMoraErrorMessage() }}
               </div>
             }
-            <button
-              type="button"
-              (click)="exportToExcel()"
-              class="inline-flex items-center gap-2 rounded-md border border-orange-600 bg-orange-600 px-4 py-2 text-sm font-medium text-white hover:bg-orange-700"
-            >
-              <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5-5 5 5M12 5v12"></path>
-              </svg>
-              Exportar Excel
-            </button>
-            <button
-              type="button"
-              (click)="onCertificadoMora()"
-              [disabled]="isGeneratingCertificadoMora()"
-              class="inline-flex items-center gap-2 rounded-md border border-orange-600 bg-white px-4 py-2 text-sm font-medium text-orange-700 hover:bg-orange-50 disabled:cursor-not-allowed disabled:opacity-60"
-            >
-              @if (isGeneratingCertificadoMora()) {
-                <svg class="h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                </svg>
-                Generando certificado...
-              } @else {
+
+            <div class="flex flex-wrap justify-end gap-3 self-end">
+              <button
+                type="button"
+                (click)="exportToExcel()"
+                [disabled]="registrosFiltrados().length === 0"
+                class="inline-flex items-center gap-2 rounded-md border border-orange-600 bg-orange-600 px-4 py-2 text-sm font-medium text-white hover:bg-orange-700 disabled:cursor-not-allowed disabled:opacity-60"
+              >
                 <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5-5 5 5M12 5v12"></path>
                 </svg>
-                Certificado Mora
-              }
-            </button>
+                Exportar Excel
+              </button>
+              <button
+                type="button"
+                (click)="onCertificadoMora()"
+                [disabled]="isGeneratingCertificadoMora()"
+                class="inline-flex items-center gap-2 rounded-md border border-orange-600 bg-white px-4 py-2 text-sm font-medium text-orange-700 hover:bg-orange-50 disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                @if (isGeneratingCertificadoMora()) {
+                  <svg class="h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  Generando certificado...
+                } @else {
+                  <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                  </svg>
+                  Certificado Mora
+                }
+              </button>
+            </div>
           </div>
 
+          @if (registrosFiltrados().length === 0) {
+            <div class="flex items-center justify-center rounded-lg border border-gray-200 bg-gray-50 p-8 text-center text-sm text-gray-600">
+              No se encontraron registros que coincidan con la búsqueda.
+            </div>
+          } @else {
           <div class="overflow-x-auto rounded-lg border border-gray-200">
             <table class="min-w-full divide-y divide-gray-200 text-sm">
               <thead class="bg-gray-50">
@@ -146,7 +188,7 @@
                 </tr>
               </thead>
               <tbody class="divide-y divide-gray-100 bg-white">
-                @for (registro of registros(); track registro.documento + '-' + registro.anio + '-' + registro.numMes) {
+                @for (registro of registrosFiltrados(); track registro.documento + '-' + registro.anio + '-' + registro.numMes) {
                   <tr class="hover:bg-gray-50">
                     <td class="px-3 py-3 text-gray-900">{{ displayValue(registro.anio) }}</td>
                     <td class="px-3 py-3 text-gray-900">{{ displayValue(registro.numMes) }}</td>
@@ -164,6 +206,7 @@
               </tbody>
             </table>
           </div>
+          }
         }
       </div>
 

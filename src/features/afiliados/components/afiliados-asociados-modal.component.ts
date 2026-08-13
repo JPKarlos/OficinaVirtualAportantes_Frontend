@@ -35,8 +35,24 @@ export class AfiliadosAsociadosModalComponent {
   isLoading = signal(false);
   generatingCertificadoHistoricoId = signal<number | null>(null);
   errorMessage = signal('');
+  searchTerm = signal('');
   afiliados = signal<AfiliadoAsociado[]>([]);
   total = signal(0);
+
+  afiliadosFiltrados = computed(() => {
+    const term = this.searchTerm().trim().toLowerCase();
+    const items = this.afiliados();
+
+    if (!term) {
+      return items;
+    }
+
+    return items.filter((item) => this.matchesSearch(item, term));
+  });
+
+  totalFiltrado = computed(() => this.afiliadosFiltrados().length);
+
+  tieneFiltroActivo = computed(() => this.searchTerm().trim().length > 0);
 
   identificacionAportante = computed(() => {
     const first = this.afiliados()[0];
@@ -107,14 +123,52 @@ export class AfiliadosAsociadosModalComponent {
   }
 
   exportToExcel(): void {
-    if (this.afiliados().length === 0) {
+    const registros = this.afiliadosFiltrados();
+
+    if (registros.length === 0) {
       return;
     }
 
     exportAfiliadosToExcel(
-      this.afiliados(),
+      registros,
       this.identificacionAportante(),
       this.nombreRazonSocial(),
+    );
+  }
+
+  onSearchInput(event: Event): void {
+    const value = (event.target as HTMLInputElement).value;
+    this.searchTerm.set(value);
+  }
+
+  clearSearch(): void {
+    this.searchTerm.set('');
+  }
+
+  private matchesSearch(item: AfiliadoAsociado, term: string): boolean {
+    const values = [
+      item.historicoId,
+      item.afiliadoId,
+      item.tipo,
+      item.documento,
+      item.apellido1,
+      item.apellido2,
+      item.nombre1,
+      item.nombre2,
+      item.nombreCompleto,
+      item.codTipCot,
+      item.tipoCotizante,
+      item.tipoApt,
+      item.idenAportante,
+      item.dvAportante,
+      item.nombreRazonSocial,
+      item.estadoRelacionLaboral,
+    ];
+
+    return values.some((value) =>
+      String(value ?? '')
+        .toLowerCase()
+        .includes(term),
     );
   }
 
@@ -144,6 +198,7 @@ export class AfiliadosAsociadosModalComponent {
 
     this.isLoading.set(true);
     this.errorMessage.set('');
+    this.searchTerm.set('');
     this.afiliados.set([]);
     this.total.set(0);
 

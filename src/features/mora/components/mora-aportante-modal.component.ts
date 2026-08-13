@@ -38,6 +38,7 @@ export class MoraAportanteModalComponent {
   certificadoErrorMessage = signal('');
   certificadoMoraErrorMessage = signal('');
   errorMessage = signal('');
+  searchTerm = signal('');
   registros = signal<MoraAportanteRegistro[]>([]);
   total = signal(0);
 
@@ -45,6 +46,21 @@ export class MoraAportanteModalComponent {
   sinRegistros = computed(
     () => !this.isLoading() && !this.errorMessage() && this.registros().length === 0,
   );
+
+  registrosFiltrados = computed(() => {
+    const term = this.searchTerm().trim().toLowerCase();
+    const items = this.registros();
+
+    if (!term) {
+      return items;
+    }
+
+    return items.filter((item) => this.matchesSearch(item, term));
+  });
+
+  totalFiltrado = computed(() => this.registrosFiltrados().length);
+
+  tieneFiltroActivo = computed(() => this.searchTerm().trim().length > 0);
 
   identificacionAportante = computed(() =>
     buildIdentificacionFromRegistro(this.registros()[0]),
@@ -102,14 +118,60 @@ export class MoraAportanteModalComponent {
   }
 
   exportToExcel(): void {
-    if (this.registros().length === 0) {
+    const registros = this.registrosFiltrados();
+
+    if (registros.length === 0) {
       return;
     }
 
     exportMoraToExcel(
-      this.registros(),
+      registros,
       this.identificacionAportante(),
       this.nombreRazonSocial(),
+    );
+  }
+
+  onSearchInput(event: Event): void {
+    const value = (event.target as HTMLInputElement).value;
+    this.searchTerm.set(value);
+  }
+
+  clearSearch(): void {
+    this.searchTerm.set('');
+  }
+
+  private matchesSearch(item: MoraAportanteRegistro, term: string): boolean {
+    const values = [
+      item.anio,
+      item.numMes,
+      item.fechaMaximoPago,
+      item.tipoDocCotizante,
+      item.documento,
+      item.apellido1,
+      item.apellido2,
+      item.nombre1,
+      item.nombre2,
+      item.nombreCompleto,
+      item.codTipCot,
+      item.tipoCotizante,
+      item.codEstadoAfiliacion,
+      item.desRegimen,
+      item.correoElectronicoCotizante,
+      item.telefonoCotizante,
+      item.valorPeriodo,
+      item.cantidadRegistros,
+      item.tipo,
+      item.idenAportante,
+      item.dvAportante,
+      item.nombreRazonSocial,
+      item.correoElectronicoAportante,
+      item.telefonoAportante,
+    ];
+
+    return values.some((value) =>
+      String(value ?? '')
+        .toLowerCase()
+        .includes(term),
     );
   }
 
@@ -189,6 +251,7 @@ export class MoraAportanteModalComponent {
     this.errorMessage.set('');
     this.certificadoErrorMessage.set('');
     this.certificadoMoraErrorMessage.set('');
+    this.searchTerm.set('');
     this.registros.set([]);
     this.total.set(0);
 

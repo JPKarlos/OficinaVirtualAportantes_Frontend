@@ -8,8 +8,7 @@ export const TIPOS_NOVEDAD_SOLICITUD: TipoNovedadConfig[] = [
     id: 'movilidad',
     tipoNovedadId: 1,
     label: 'Movilidad',
-    descripcion:
-      'Traslado del cotizante desde otra EPS o cambio de régimen de afiliación.',
+    descripcion: 'Cambio de régimen de afiliación en la misma EPS.',
     documentos: [
       {
         id: 'mov-fua',
@@ -168,15 +167,16 @@ export const TIPOS_NOVEDAD_SOLICITUD: TipoNovedadConfig[] = [
         formatosPermitidos: ['PDF'],
         ejemploNombreArchivo: 'FUA_relacion_laboral.pdf',
       },
-      {
-        id: 'rl-certificado-anterior',
-        nombre: 'Certificado de afiliación anterior',
-        descripcion:
-          'Solo si el cotizante proviene de otra EPS o cambió de tipo de cotizante.',
-        obligatorio: false,
-        formatosPermitidos: ['PDF'],
-        ejemploNombreArchivo: 'Certificado_afiliacion_anterior.pdf',
-      },
+      // TODO: Documento opcional deshabilitado temporalmente — ya no se utiliza.
+      // {
+      //   id: 'rl-certificado-anterior',
+      //   nombre: 'Certificado de afiliación anterior',
+      //   descripcion:
+      //     'Solo si el cotizante proviene de otra EPS o cambió de tipo de cotizante.',
+      //   obligatorio: false,
+      //   formatosPermitidos: ['PDF'],
+      //   ejemploNombreArchivo: 'Certificado_afiliacion_anterior.pdf',
+      // },
     ],
   },
   {
@@ -186,24 +186,16 @@ export const TIPOS_NOVEDAD_SOLICITUD: TipoNovedadConfig[] = [
     descripcion:
       'Reporte de retiro del cotizante por terminación de la relación laboral con el aportante.',
     documentos: [
-      {
-        id: 'trl-fua-novedad',
-        nombre: 'Formato único de novedad N11',
-        descripcion:
-          'Formulario de novedad de terminación de relación laboral debidamente diligenciado y firmado.',
-        obligatorio: true,
-        formatosPermitidos: ['PDF'],
-        ejemploNombreArchivo: 'FUA_terminacion_N11.pdf',
-      },
-      {
-        id: 'trl-carta-terminacion',
-        nombre: 'Carta o documento de terminación del contrato',
-        descripcion:
-          'Documento firmado por el aportante que acredite la terminación de la relación laboral, con fecha de retiro.',
-        obligatorio: true,
-        formatosPermitidos: ['PDF', 'DOCX'],
-        ejemploNombreArchivo: 'Carta_terminacion_contrato.pdf',
-      },
+      // TODO: Documento opcional deshabilitado temporalmente — ya no se utiliza.
+      // {
+      //   id: 'trl-fua-novedad',
+      //   nombre: 'Formato único de novedad N11',
+      //   descripcion:
+      //     'Formulario de novedad de terminación de relación laboral debidamente diligenciado y firmado.',
+      //   obligatorio: true,
+      //   formatosPermitidos: ['PDF'],
+      //   ejemploNombreArchivo: 'FUA_terminacion_N11.pdf',
+      // },
       {
         id: 'trl-documento-id',
         nombre: 'Documento de identidad del cotizante',
@@ -211,6 +203,15 @@ export const TIPOS_NOVEDAD_SOLICITUD: TipoNovedadConfig[] = [
         obligatorio: true,
         formatosPermitidos: ['PDF', 'JPG', 'PNG'],
         ejemploNombreArchivo: 'Documento_cotizante.pdf',
+      },
+      {
+        id: 'trl-carta-terminacion',
+        nombre: 'Carta o documento de terminación del contrato',
+        descripcion:
+          'Documento firmado por el aportante que acredite la terminación de la relación laboral, con fecha de retiro.',
+        obligatorio: false,
+        formatosPermitidos: ['PDF', 'DOCX'],
+        ejemploNombreArchivo: 'Carta_terminacion_contrato.pdf',
       },
       {
         id: 'trl-liquidacion',

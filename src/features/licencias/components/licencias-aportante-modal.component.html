@@ -142,6 +142,7 @@
                   <th scope="col" class="px-3 py-3 text-left font-semibold text-gray-700 whitespace-nowrap">Fecha PP</th>
                   <th scope="col" class="px-3 py-3 text-left font-semibold text-gray-700 whitespace-nowrap">Estado novedad</th>
                   <th scope="col" class="px-3 py-3 text-left font-semibold text-gray-700 whitespace-nowrap">Nro. comprobante</th>
+                  <th scope="col" class="px-3 py-3 text-left font-semibold text-gray-700 whitespace-nowrap">Acción</th>
                 </tr>
               </thead>
               <tbody class="divide-y divide-gray-100 bg-white">
@@ -161,7 +162,7 @@
                     <td class="px-3 py-3 text-gray-600 whitespace-nowrap">{{ formatDate(item.fechaFinLicencia) }}</td>
                     <td class="px-3 py-3 text-gray-600 whitespace-nowrap">{{ displayValue(item.diasReconocer) }}</td>
                     <td class="px-3 py-3 text-gray-600 whitespace-nowrap">{{ formatDate(item.fechaPago) }}</td>
-                    <td class="px-3 py-3 text-gray-600 whitespace-nowrap">{{ displayValue(item.pagada) }}</td>
+                    <td class="px-3 py-3 text-gray-600 whitespace-nowrap">{{ mostrarPagada(item) }}</td>
                     <td class="px-3 py-3 text-gray-600 whitespace-nowrap">{{ formatMoney(item.vrAPagar) }}</td>
                     <td class="px-3 py-3 text-gray-600 whitespace-nowrap">{{ displayValue(item.radicacion) }}</td>
                     <td class="px-3 py-3 text-gray-600 whitespace-nowrap">{{ displayValue(item.diasGestacion) }}</td>
@@ -170,6 +171,16 @@
                     <td class="px-3 py-3 text-gray-600 whitespace-nowrap">{{ formatDate(item.fechaPp) }}</td>
                     <td class="px-3 py-3 text-gray-600 whitespace-nowrap">{{ displayValue(item.estadoNovedad) }}</td>
                     <td class="px-3 py-3 text-gray-600 whitespace-nowrap">{{ displayValue(item.nroComprobante) }}</td>
+                    <td class="px-3 py-3 whitespace-nowrap">
+                      <button
+                        type="button"
+                        (click)="verSoportePago(item)"
+                        [disabled]="!esPagada(item)"
+                        class="inline-flex items-center gap-1.5 rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-50"
+                      >
+                        Ver soporte
+                      </button>
+                    </td>
                   </tr>
                 }
               </tbody>

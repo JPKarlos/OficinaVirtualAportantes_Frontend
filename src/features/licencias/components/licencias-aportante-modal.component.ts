@@ -87,6 +87,42 @@ export class LicenciasAportanteModalComponent {
     }
   }
 
+  esPagada(item: LicenciaAportante): boolean {
+    return item.pagada?.trim() === '2';
+  }
+
+  mostrarPagada(item: LicenciaAportante): string {
+    return this.esPagada(item) ? 'Pagada' : this.displayValue(item.pagada);
+  }
+
+  async verSoportePago(item: LicenciaAportante): Promise<void> {
+    const aportanteId = this.aportanteId();
+
+    if (!aportanteId || !item.afiliadoId || !item.licenciasMaternidadId) {
+      return;
+    }
+
+    try {
+      const { blob, fileName } =
+        await this.licenciasService.downloadSoportePago(
+          aportanteId,
+          item.afiliadoId,
+          item.licenciasMaternidadId,
+        );
+
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = fileName;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      setTimeout(() => window.URL.revokeObjectURL(url), 10_000);
+    } catch {
+      // No se pudo obtener el soporte de pago
+    }
+  }
+
   displayValue(value: string | number | null | undefined): string {
     if (value === null || value === undefined || value === '') {
       return '—';
