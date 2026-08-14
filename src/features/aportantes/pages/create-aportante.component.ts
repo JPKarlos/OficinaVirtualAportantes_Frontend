@@ -20,7 +20,7 @@ import { TipoAportanteContSelectComponent } from '../components/tipo-aportante-c
 import { FormaPresentacionSelectComponent } from '../components/forma-presentacion-select.component';
 import { AportantesService } from '../data-access/aportantes.service';
 import { AuthService } from '../../auth/data-access/auth.service';
-import { CreateAportanteRequest } from '../interfaces/create-aportante.interface';
+import { buildInvalidFieldMessage } from '../utils/aportante-form.validators';
 
 @Component({
   selector: 'app-create-aportante',
@@ -52,6 +52,11 @@ export default class CreateAportanteComponent {
   isLoading = signal(false);
   successMessage = signal('');
   errorMessage = signal('');
+  rutFiles = signal<File[]>([]);
+  rutError = signal('');
+  isRutDragging = signal(false);
+  readonly maxRutFileSize = 10 * 1024 * 1024;
+  readonly maxRutFiles = 10;
 
   constructor() {
     this.createForm = this.fb.group({
@@ -135,8 +140,17 @@ export default class CreateAportanteComponent {
   }
 
   async onSubmit(): Promise<void> {
+    if (this.rutFiles().length === 0) {
+      this.rutError.set('Debe cargar al menos un documento de soporte en formato PDF.');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      return;
+    }
+
     if (!this.createForm.valid) {
       this.markFormGroupTouched();
+      this.successMessage.set('');
+      this.errorMessage.set(buildInvalidFieldMessage(this.createForm.controls));
+      window.scrollTo({ top: 0, behavior: 'smooth' });
       return;
     }
 
@@ -145,9 +159,9 @@ export default class CreateAportanteComponent {
     this.successMessage.set('');
 
     try {
-      const response = await this.aportantesService.create(
-        this.buildCreatePayload(),
-      );
+      const formData = this.buildCreateFormData();
+
+      const response = await this.aportantesService.create(formData);
 
       this.authService.updateSessionAfterAportanteCreated(
         response.aportanteId,
@@ -163,13 +177,7 @@ export default class CreateAportanteComponent {
         this.router.navigate(['/home']);
       }, 1500);
     } catch (error: unknown) {
-      const message =
-        (error as { error?: { message?: string | string[] } })?.error?.message ??
-        'No fue posible registrar el aportante. Intente nuevamente.';
-
-      this.errorMessage.set(
-        Array.isArray(message) ? message.join(', ') : String(message),
-      );
+      this.errorMessage.set(this.resolveSubmitErrorMessage(error));
     } finally {
       this.isLoading.set(false);
     }
@@ -179,53 +187,221 @@ export default class CreateAportanteComponent {
     this.router.navigate(['/home']);
   }
 
-  private buildCreatePayload(): CreateAportanteRequest {
-    const raw = this.createForm.getRawValue();
-
-    return {
-      nombreRazonSocial: raw.nombreRazonSocial,
-      apidentificacionId: raw.apidentificacionId,
-      idenAportante: raw.idenAportante,
-      dvAportante: this.toNullableString(raw.dvAportante),
-      codSucDep: this.toNullableString(raw.codSucDep),
-      nomSucDep: this.toNullableString(raw.nomSucDep),
-      claseAportanteIde: raw.claseAportanteIde,
-      naturalezaAportanteIde: raw.naturalezaAportanteIde,
-      tipoPersonaIde: raw.tipoPersonaIde,
-      formaPresentacionIde: raw.formaPresentacionIde ?? null,
-      direccionCorres: this.toNullableString(raw.direccionCorres),
-      direccionAlterna: this.toNullableString(raw.direccionAlterna),
-      municipioIde: raw.municipioIde,
-      ciiuClaseId: raw.ciiuClaseId,
-      telefono: this.toNullableString(raw.telefono),
-      telefono2: this.toNullableString(raw.telefono2),
-      celular: this.toNullableString(raw.celular),
-      celular2: this.toNullableString(raw.celular2),
-      fax: this.toNullableString(raw.fax),
-      email: this.toNullableString(raw.email),
-      email2: this.toNullableString(raw.email2),
-      idenRepLegal: this.toNullableString(raw.idenRepLegal),
-      dvRepLegal: this.toNullableString(raw.dvRepLegal),
-      rlIdentificacionId: raw.rlIdentificacionId,
-      apellido1RepLeg: this.toNullableString(raw.apellido1RepLeg),
-      apellido2RepLeg: this.toNullableString(raw.apellido2RepLeg),
-      nombre1RepLeg: this.toNullableString(raw.nombre1RepLeg),
-      nombre2RepLeg: this.toNullableString(raw.nombre2RepLeg),
-      fechaInicio: this.toNullableString(raw.fechaInicio),
-      tipoAccionIde: raw.tipoAccionIde ?? null,
-      fechaFin: this.toNullableString(raw.fechaFin),
-      tipoAportanteContIde: raw.tipoAportanteContIde ?? null,
-    };
+  onRutFilesSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const files = input.files ? Array.from(input.files) : [];
+    this.processRutFiles(files);
+    input.value = '';
   }
 
-  private toNullableString(value?: string | null): string | null {
-    const trimmed = value?.trim();
-    return trimmed ? trimmed : null;
+  onRutDragOver(event: DragEvent): void {
+    event.preventDefault();
+    event.stopPropagation();
+    this.isRutDragging.set(true);
+  }
+
+  onRutDragLeave(event: DragEvent): void {
+    event.preventDefault();
+    event.stopPropagation();
+    this.isRutDragging.set(false);
+  }
+
+  onRutDrop(event: DragEvent): void {
+    event.preventDefault();
+    event.stopPropagation();
+    this.isRutDragging.set(false);
+    const files = event.dataTransfer?.files
+      ? Array.from(event.dataTransfer.files)
+      : [];
+    this.processRutFiles(files);
+  }
+
+  removeRutFile(file: File): void {
+    this.rutFiles.update((current) => current.filter((f) => f !== file));
+    this.rutError.set('');
+  }
+
+  private buildCreateFormData(): FormData {
+    const raw = this.createForm.getRawValue();
+    const formData = new FormData();
+
+    formData.append('nombreRazonSocial', raw.nombreRazonSocial ?? '');
+    if (raw.apidentificacionId !== null && raw.apidentificacionId !== undefined) {
+      formData.append('apidentificacionId', String(raw.apidentificacionId));
+    }
+    formData.append('idenAportante', raw.idenAportante ?? '');
+    if (raw.dvAportante) {
+      formData.append('dvAportante', raw.dvAportante);
+    }
+    if (raw.codSucDep) {
+      formData.append('codSucDep', raw.codSucDep);
+    }
+    if (raw.nomSucDep) {
+      formData.append('nomSucDep', raw.nomSucDep);
+    }
+    if (raw.claseAportanteIde !== null && raw.claseAportanteIde !== undefined) {
+      formData.append('claseAportanteIde', String(raw.claseAportanteIde));
+    }
+    if (raw.tipoAportanteContIde !== null && raw.tipoAportanteContIde !== undefined) {
+      formData.append('tipoAportanteContIde', String(raw.tipoAportanteContIde));
+    }
+    if (raw.naturalezaAportanteIde !== null && raw.naturalezaAportanteIde !== undefined) {
+      formData.append('naturalezaAportanteIde', String(raw.naturalezaAportanteIde));
+    }
+    if (raw.tipoPersonaIde !== null && raw.tipoPersonaIde !== undefined) {
+      formData.append('tipoPersonaIde', String(raw.tipoPersonaIde));
+    }
+    if (raw.formaPresentacionIde !== null && raw.formaPresentacionIde !== undefined) {
+      formData.append('formaPresentacionIde', String(raw.formaPresentacionIde));
+    }
+    if (raw.tipoAccionIde !== null && raw.tipoAccionIde !== undefined) {
+      formData.append('tipoAccionIde', String(raw.tipoAccionIde));
+    }
+    if (raw.municipioIde !== null && raw.municipioIde !== undefined) {
+      formData.append('municipioIde', String(raw.municipioIde));
+    }
+    if (raw.ciiuClaseId !== null && raw.ciiuClaseId !== undefined) {
+      formData.append('ciiuClaseId', String(raw.ciiuClaseId));
+    }
+    if (raw.direccionCorres) {
+      formData.append('direccionCorres', raw.direccionCorres);
+    }
+    if (raw.direccionAlterna) {
+      formData.append('direccionAlterna', raw.direccionAlterna);
+    }
+    if (raw.telefono) {
+      formData.append('telefono', raw.telefono);
+    }
+    if (raw.telefono2) {
+      formData.append('telefono2', raw.telefono2);
+    }
+    if (raw.celular) {
+      formData.append('celular', raw.celular);
+    }
+    if (raw.celular2) {
+      formData.append('celular2', raw.celular2);
+    }
+    if (raw.fax) {
+      formData.append('fax', raw.fax);
+    }
+    if (raw.email) {
+      formData.append('email', raw.email);
+    }
+    if (raw.email2) {
+      formData.append('email2', raw.email2);
+    }
+    if (raw.rlIdentificacionId !== null && raw.rlIdentificacionId !== undefined) {
+      formData.append('rlIdentificacionId', String(raw.rlIdentificacionId));
+    }
+    if (raw.idenRepLegal) {
+      formData.append('idenRepLegal', raw.idenRepLegal);
+    }
+    if (raw.dvRepLegal) {
+      formData.append('dvRepLegal', raw.dvRepLegal);
+    }
+    if (raw.apellido1RepLeg) {
+      formData.append('apellido1RepLeg', raw.apellido1RepLeg);
+    }
+    if (raw.apellido2RepLeg) {
+      formData.append('apellido2RepLeg', raw.apellido2RepLeg);
+    }
+    if (raw.nombre1RepLeg) {
+      formData.append('nombre1RepLeg', raw.nombre1RepLeg);
+    }
+    if (raw.nombre2RepLeg) {
+      formData.append('nombre2RepLeg', raw.nombre2RepLeg);
+    }
+    if (raw.fechaInicio) {
+      formData.append('fechaInicio', raw.fechaInicio);
+    }
+    if (raw.fechaFin) {
+      formData.append('fechaFin', raw.fechaFin);
+    }
+
+    for (const file of this.rutFiles()) {
+      formData.append('files', file, file.name);
+    }
+
+    return formData;
+  }
+
+  private processRutFiles(files: File[]): void {
+    if (!files.length) {
+      return;
+    }
+
+    const current = this.rutFiles();
+
+    for (const file of files) {
+      if (!file.name.toLowerCase().endsWith('.pdf')) {
+        this.rutError.set(
+          'Todos los documentos de soporte deben estar en formato PDF.',
+        );
+        continue;
+      }
+
+      if (file.size > this.maxRutFileSize) {
+        this.rutError.set(
+          'Un documento supera el tamaño máximo permitido (10 MB por archivo).',
+        );
+        continue;
+      }
+    }
+
+    const validFiles = files.filter(
+      (file) =>
+        file.name.toLowerCase().endsWith('.pdf') &&
+        file.size <= this.maxRutFileSize &&
+        !current.some((f) => f.name === file.name && f.size === file.size),
+    );
+
+    if (!validFiles.length) {
+      this.rutError.set(
+        this.rutError() ||
+          'No se pudo cargar ningún archivo válido. Verifique los formatos.',
+      );
+      return;
+    }
+
+    if (current.length + validFiles.length > this.maxRutFiles) {
+      this.rutError.set(
+        `Solo se permiten hasta ${this.maxRutFiles} documentos de soporte.`,
+      );
+      this.rutFiles.set([...current, ...validFiles].slice(0, this.maxRutFiles));
+      return;
+    }
+
+    this.rutError.set('');
+    this.rutFiles.set([...current, ...validFiles]);
   }
 
   private markFormGroupTouched(): void {
     Object.keys(this.createForm.controls).forEach((key) => {
       this.createForm.get(key)?.markAsTouched();
     });
+  }
+
+  private resolveSubmitErrorMessage(error: unknown): string {
+    const httpError = error as {
+      error?: { message?: string | string[] };
+      message?: string;
+      status?: number;
+    };
+
+    const apiMessage = httpError.error?.message ?? httpError.message;
+
+    if (Array.isArray(apiMessage)) {
+      return apiMessage.join(', ');
+    }
+
+    if (typeof apiMessage === 'string' && apiMessage.trim()) {
+      return apiMessage;
+    }
+
+    if (httpError.status === 0) {
+      return 'No hay conexión con el servidor. Verifique que la API esté en ejecución.';
+    }
+
+    return 'No fue posible registrar el aportante. Intente nuevamente.';
   }
 }

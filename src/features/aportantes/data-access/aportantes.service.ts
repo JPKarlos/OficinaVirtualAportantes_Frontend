@@ -3,9 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
 import { firstValueFrom } from 'rxjs';
 import {
-  CreateAportanteRequest,
   CreateAportanteResponse,
-  UpdateAportanteRequest,
   UpdateAportanteResponse,
   UpdateMisDatosResponse,
 } from '../interfaces/create-aportante.interface';
@@ -18,7 +16,7 @@ export class AportantesService {
   private readonly http = inject(HttpClient);
   private readonly baseUrl = environment.baseUrl;
 
-  async create(payload: CreateAportanteRequest): Promise<CreateAportanteResponse> {
+  async create(payload: FormData): Promise<CreateAportanteResponse> {
     return firstValueFrom(
       this.http.post<CreateAportanteResponse>(`${this.baseUrl}/aportantes`, payload),
     );
@@ -32,7 +30,7 @@ export class AportantesService {
 
   async update(
     aportanteId: number,
-    payload: UpdateAportanteRequest,
+    payload: FormData,
   ): Promise<UpdateAportanteResponse> {
     return firstValueFrom(
       this.http.put<UpdateAportanteResponse>(
