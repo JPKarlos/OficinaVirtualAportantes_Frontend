@@ -10,7 +10,7 @@
       <div class="flex items-start justify-between border-b border-gray-200 px-6 py-4">
         <div>
           <h2 id="licencias-modal-title" class="text-xl font-bold text-gray-900">
-            Prestaciones Económicas x Aportante - Licencias
+            Prestaciones Económicas por Aportante - Licencias
           </h2>
           @if (total() > 0 && !isLoading()) {
             <p class="mt-1 text-sm text-gray-500">{{ total() }} registro(s)</p>
@@ -127,8 +127,6 @@
                   <th scope="col" class="px-3 py-3 text-left font-semibold text-gray-700 whitespace-nowrap">Apellido2</th>
                   <th scope="col" class="px-3 py-3 text-left font-semibold text-gray-700 whitespace-nowrap">Nombre1</th>
                   <th scope="col" class="px-3 py-3 text-left font-semibold text-gray-700 whitespace-nowrap">Nombre2</th>
-                  <th scope="col" class="px-3 py-3 text-left font-semibold text-gray-700 whitespace-nowrap">Salario</th>
-                  <th scope="col" class="px-3 py-3 text-left font-semibold text-gray-700 whitespace-nowrap">Tipo salario</th>
                   <th scope="col" class="px-3 py-3 text-left font-semibold text-gray-700 whitespace-nowrap">Fecha inicio</th>
                   <th scope="col" class="px-3 py-3 text-left font-semibold text-gray-700 whitespace-nowrap">Fecha fin licencia</th>
                   <th scope="col" class="px-3 py-3 text-left font-semibold text-gray-700 whitespace-nowrap">Días reconocer</th>
@@ -156,8 +154,6 @@
                     <td class="px-3 py-3 text-gray-900 whitespace-nowrap">{{ displayValue(item.apellido2) }}</td>
                     <td class="px-3 py-3 text-gray-900 whitespace-nowrap">{{ displayValue(item.nombre1) }}</td>
                     <td class="px-3 py-3 text-gray-900 whitespace-nowrap">{{ displayValue(item.nombre2) }}</td>
-                    <td class="px-3 py-3 text-gray-600 whitespace-nowrap">{{ formatMoney(item.salario) }}</td>
-                    <td class="px-3 py-3 text-gray-600 whitespace-nowrap">{{ displayValue(item.tipoSalario) }}</td>
                     <td class="px-3 py-3 text-gray-600 whitespace-nowrap">{{ formatDate(item.fechaInicio) }}</td>
                     <td class="px-3 py-3 text-gray-600 whitespace-nowrap">{{ formatDate(item.fechaFinLicencia) }}</td>
                     <td class="px-3 py-3 text-gray-600 whitespace-nowrap">{{ displayValue(item.diasReconocer) }}</td>

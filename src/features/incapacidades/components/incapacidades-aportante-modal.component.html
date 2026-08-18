@@ -10,7 +10,7 @@
       <div class="flex items-start justify-between border-b border-gray-200 px-6 py-4">
         <div>
           <h2 id="incapacidades-modal-title" class="text-xl font-bold text-gray-900">
-            Prestaciones Económicas x Aportante - Incapacidades
+            Prestaciones Económicas por Aportante - Incapacidades
           </h2>
           @if (total() > 0 && !isLoading()) {
             <p class="mt-1 text-sm text-gray-500">{{ total() }} registro(s)</p>
@@ -74,7 +74,7 @@
                   type="search"
                   [value]="searchTerm()"
                   (input)="onSearchInput($event)"
-                  placeholder="Documento, nombre, BarCode, diagnóstico, comprobante..."
+                  placeholder="Documento, nombre, BarCode, comprobante..."
                   class="w-full rounded-md border border-gray-300 py-2 pl-3 pr-10 text-sm text-gray-900 placeholder:text-gray-400 focus:border-yellow-600 focus:outline-none focus:ring-1 focus:ring-yellow-600"
                 />
                 @if (tieneFiltroActivo()) {
@@ -130,13 +130,10 @@
                   <th scope="col" class="px-3 py-3 text-left font-semibold text-gray-700 whitespace-nowrap">Fecha fin</th>
                   <th scope="col" class="px-3 py-3 text-left font-semibold text-gray-700 whitespace-nowrap">Fecha radicado</th>
                   <th scope="col" class="px-3 py-3 text-left font-semibold text-gray-700 whitespace-nowrap">BarCode</th>
-                  <th scope="col" class="px-3 py-3 text-left font-semibold text-gray-700 whitespace-nowrap">Cód. diagnóstico</th>
-                  <th scope="col" class="px-3 py-3 text-left font-semibold text-gray-700 whitespace-nowrap">Diagnóstico</th>
                   <th scope="col" class="px-3 py-3 text-left font-semibold text-gray-700 whitespace-nowrap">Estado novedad</th>
                   <th scope="col" class="w-48 max-w-[12rem] px-3 py-3 text-left font-semibold text-gray-700">Observaciones</th>
                   <th scope="col" class="px-3 py-3 text-left font-semibold text-gray-700 whitespace-nowrap">Tipo incapacidad</th>
                   <th scope="col" class="px-3 py-3 text-left font-semibold text-gray-700 whitespace-nowrap">Fecha pago</th>
-                  <th scope="col" class="px-3 py-3 text-left font-semibold text-gray-700 whitespace-nowrap">Pago por</th>
                   <th scope="col" class="px-3 py-3 text-left font-semibold text-gray-700 whitespace-nowrap">Comprobante</th>
                   <th scope="col" class="px-3 py-3 text-left font-semibold text-gray-700 whitespace-nowrap">Estado pago</th>
                   <th scope="col" class="px-3 py-3 text-left font-semibold text-gray-700 whitespace-nowrap">Acción</th>
@@ -156,13 +153,10 @@
                     <td class="px-3 py-3 text-gray-600 whitespace-nowrap">{{ formatDate(item.fechaFin) }}</td>
                     <td class="px-3 py-3 text-gray-600 whitespace-nowrap">{{ formatDate(item.fechaRadicado) }}</td>
                     <td class="px-3 py-3 text-gray-600 whitespace-nowrap">{{ displayValue(item.barCode) }}</td>
-                    <td class="px-3 py-3 text-gray-600 whitespace-nowrap">{{ displayValue(item.codDiagnostico) }}</td>
-                    <td class="px-3 py-3 text-gray-600">{{ displayValue(item.diagnostico) }}</td>
                     <td class="px-3 py-3 text-gray-600 whitespace-nowrap">{{ displayValue(item.estadoNovedad) }}</td>
                     <td class="w-48 max-w-[12rem] px-3 py-3 text-gray-600 whitespace-normal break-words">{{ displayValue(item.observacionesRegistro) }}</td>
                     <td class="px-3 py-3 text-gray-600 whitespace-nowrap">{{ displayValue(item.tipoIncapacidad) }}</td>
                     <td class="px-3 py-3 text-gray-600 whitespace-nowrap">{{ formatDate(item.fechaPago) }}</td>
-                    <td class="px-3 py-3 text-gray-600 whitespace-nowrap">{{ displayValue(item.pagoPor) }}</td>
                     <td class="px-3 py-3 text-gray-600 whitespace-nowrap">{{ displayValue(item.comprobante) }}</td>
                     <td class="px-3 py-3 text-gray-600 whitespace-nowrap">{{ displayValue(item.estadoPago) }}</td>
                     <td class="px-3 py-3 whitespace-nowrap">

@@ -171,13 +171,10 @@ export class IncapacidadesAportanteModalComponent {
       formatDateValue(item.fechaFin),
       formatDateValue(item.fechaRadicado),
       item.barCode,
-      item.codDiagnostico,
-      item.diagnostico,
       item.estadoNovedad,
       item.observacionesRegistro,
       item.tipoIncapacidad,
       formatDateValue(item.fechaPago),
-      item.pagoPor,
       item.comprobante,
       item.estadoPago,
     ];

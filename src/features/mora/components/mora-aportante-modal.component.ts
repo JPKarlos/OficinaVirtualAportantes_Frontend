@@ -1,4 +1,4 @@
-import {
+ import {
   Component,
   HostListener,
   computed,
@@ -11,12 +11,17 @@ import {
 import { CommonModule } from '@angular/common';
 import { MoraAportanteService } from '../data-access/mora-aportante.service';
 import { MoraAportanteRegistro } from '../interfaces/mora-aportante.interface';
+import { AportantesService } from '../../aportantes/data-access/aportantes.service';
+import { AportanteDetail } from '../../aportantes/interfaces/aportante-detail.interface';
+import { AccesoriaService } from '../../aportantes/data-access/accesoria.service';
 import {
   buildIdentificacionFromRegistro,
   exportMoraToExcel,
   formatCurrency,
   formatDateValue,
 } from '../utils/mora-excel.export';
+import { generateCertificadoMoraPdf } from '../utils/certificado-mora.pdf';
+import { generateCertificadoPazYSalvoPdf } from '../utils/certificado-paz-y-salvo.pdf';
 
 @Component({
   selector: 'app-mora-aportante-modal',
@@ -26,6 +31,8 @@ import {
 })
 export class MoraAportanteModalComponent {
   private readonly moraService = inject(MoraAportanteService);
+  private readonly aportantesService = inject(AportantesService);
+  private readonly accesoriaService = inject(AccesoriaService);
 
   open = input(false);
   aportanteId = input<number | null>(null);
@@ -41,6 +48,8 @@ export class MoraAportanteModalComponent {
   searchTerm = signal('');
   registros = signal<MoraAportanteRegistro[]>([]);
   total = signal(0);
+  aportanteInfo = signal<AportanteDetail | null>(null);
+  tipoAportante = signal('');
 
   hasRegistros = computed(() => this.registros().length > 0);
   sinRegistros = computed(
@@ -62,11 +71,30 @@ export class MoraAportanteModalComponent {
 
   tieneFiltroActivo = computed(() => this.searchTerm().trim().length > 0);
 
-  identificacionAportante = computed(() =>
-    buildIdentificacionFromRegistro(this.registros()[0]),
-  );
+  identificacionAportante = computed(() => {
+    const aportante = this.aportanteInfo();
+
+    if (aportante?.idenAportante) {
+      const iden = aportante.idenAportante.trim();
+      const dv = aportante.dvAportante?.trim();
+      const numero = dv ? `${iden}-${dv}` : iden;
+      const tipo =
+        this.tipoAportante().trim() ||
+        this.registros()[0]?.tipo?.trim() ||
+        '';
+      return tipo ? `${tipo} ${numero}` : numero;
+    }
+
+    return buildIdentificacionFromRegistro(this.registros()[0]);
+  });
 
   nombreRazonSocial = computed(() => {
+    const aportante = this.aportanteInfo();
+
+    if (aportante?.nombreRazonSocial?.trim()) {
+      return aportante.nombreRazonSocial.trim();
+    }
+
     const value = this.registros()[0]?.nombreRazonSocial?.trim();
     return value || '—';
   });
@@ -184,11 +212,11 @@ export class MoraAportanteModalComponent {
   }
 
   private async generateCertificadoMora(): Promise<void> {
-    const aportanteId = this.aportanteId();
+    const registros = this.registros();
 
-    if (!aportanteId) {
+    if (registros.length === 0) {
       this.certificadoMoraErrorMessage.set(
-        'No se encontró un aportante asociado al usuario.',
+        'No hay registros de mora para generar el certificado.',
       );
       return;
     }
@@ -197,7 +225,11 @@ export class MoraAportanteModalComponent {
     this.certificadoMoraErrorMessage.set('');
 
     try {
-      await this.moraService.downloadCertificadoMora(aportanteId);
+      await generateCertificadoMoraPdf(
+        registros,
+        this.identificacionAportante(),
+        this.nombreRazonSocial(),
+      );
     } catch (error: unknown) {
       const message =
         error instanceof Error && error.message.trim()
@@ -211,20 +243,14 @@ export class MoraAportanteModalComponent {
   }
 
   private async generateCertificadoPazYSalvo(): Promise<void> {
-    const aportanteId = this.aportanteId();
-
-    if (!aportanteId) {
-      this.certificadoErrorMessage.set(
-        'No se encontró un aportante asociado al usuario.',
-      );
-      return;
-    }
-
     this.isGeneratingCertificado.set(true);
     this.certificadoErrorMessage.set('');
 
     try {
-      await this.moraService.downloadCertificadoPazYSalvo(aportanteId);
+      await generateCertificadoPazYSalvoPdf(
+        this.nombreRazonSocial(),
+        this.identificacionAportante(),
+      );
     } catch (error: unknown) {
       const message =
         error instanceof Error && error.message.trim()
@@ -234,6 +260,30 @@ export class MoraAportanteModalComponent {
       this.certificadoErrorMessage.set(message);
     } finally {
       this.isGeneratingCertificado.set(false);
+    }
+  }
+
+  private async loadAportanteData(): Promise<void> {
+    const aportanteId = this.aportanteId();
+
+    if (!aportanteId) {
+      this.aportanteInfo.set(null);
+      this.tipoAportante.set('');
+      return;
+    }
+
+    try {
+      const aportante = await this.aportantesService.getById(aportanteId);
+      this.aportanteInfo.set(aportante);
+
+      const tipos = await this.accesoriaService.listTipoIdenCont();
+      const tipo = tipos.find(
+        (item) => item.tipoIdenContId === aportante.apidentificacionId,
+      );
+      this.tipoAportante.set(tipo?.tipo?.trim() ?? '');
+    } catch {
+      this.aportanteInfo.set(null);
+      this.tipoAportante.set('');
     }
   }
 
@@ -256,6 +306,8 @@ export class MoraAportanteModalComponent {
     this.total.set(0);
 
     try {
+      await this.loadAportanteData();
+
       const response = await this.moraService.listByAportanteId(aportanteId);
       this.registros.set(response.registros);
       this.total.set(response.total);

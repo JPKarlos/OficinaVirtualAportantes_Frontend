@@ -20,15 +20,6 @@ export const TIPOS_NOVEDAD_SOLICITUD: TipoNovedadConfig[] = [
         ejemploNombreArchivo: 'FUA_movilidad_CC1234567890.pdf',
       },
       {
-        id: 'mov-eps-anterior',
-        nombre: 'Certificado de afiliación EPS anterior',
-        descripcion:
-          'Certificado emitido por la EPS de origen con fecha de afiliación y retiro.',
-        obligatorio: true,
-        formatosPermitidos: ['PDF'],
-        ejemploNombreArchivo: 'Certificado_EPS_anterior.pdf',
-      },
-      {
         id: 'mov-documento-id',
         nombre: 'Documento de identidad del cotizante',
         descripcion: 'Copia legible del documento de identidad vigente.',

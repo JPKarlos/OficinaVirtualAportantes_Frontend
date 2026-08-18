@@ -179,10 +179,22 @@ export class AfiliadosAsociadosModalComponent {
   generateCertificadoAfiliacion(afiliado: AfiliadoAsociado): void {
     this.generatingCertificadoHistoricoId.set(afiliado.historicoId);
 
-    try {
-      generateCertificadoAfiliacionPdf(afiliado);
-    } finally {
+    void this.generateCertificadoAfiliacionPdf(afiliado).finally(() => {
       this.generatingCertificadoHistoricoId.set(null);
+    });
+  }
+
+  private async generateCertificadoAfiliacionPdf(
+    afiliado: AfiliadoAsociado,
+  ): Promise<void> {
+    try {
+      await generateCertificadoAfiliacionPdf(afiliado);
+    } catch (error: unknown) {
+      const message =
+        error instanceof Error && error.message.trim()
+          ? error.message
+          : 'No fue posible generar el certificado de afiliación.';
+      this.errorMessage.set(message);
     }
   }
 

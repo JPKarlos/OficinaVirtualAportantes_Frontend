@@ -16,6 +16,8 @@ export interface AfiliadoAsociado {
   nombreRazonSocial: string | null;
   aportanteId: number | null;
   estadoRelacionLaboral: number | null;
+  fechafiliacion: string | null;
+  desRegimen: string | null;
 }
 
 export interface AfiliadosAsociadosResponse {
