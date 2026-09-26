@@ -10,6 +10,7 @@ interface MenuItem {
   title: string;
   icon: string;
   route?: string;
+  downloadUrl?: string;
   isActive?: boolean;
   subItems?: SubMenuItem[];
   isOpen?: boolean;

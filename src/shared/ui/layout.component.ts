@@ -19,7 +19,13 @@ export default class LayoutComponent {
       id: 'change-password',
       title: 'Cambiar Contraseña',
       icon: 'key',
-      route: '/auth/change-password'
+      route: '/auth/change-password',
+    },
+    {
+      id: 'user-manual',
+      title: 'Manual de Usuario',
+      icon: 'document',
+      downloadUrl: '/assets/Manual/Manual-Usuario-Oficina-Virtual-Aportantes.pdf'
     }
   ]);
 
